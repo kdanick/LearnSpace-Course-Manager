@@ -1,7 +1,9 @@
+package DatabaseManager;
+
 import java.sql.*;
 import java.util.Scanner;
 
-public class DatabaseManager {
+public class DatabaseCli {
 
     // Method to list all tables in the database
     public static void listTables() {
@@ -42,7 +44,7 @@ public class DatabaseManager {
             }
             System.out.println("✅ Database connection successful!");
 
-            // Verify if table exist first
+            // Verify if table exists first (prevents SQL injection)
             DatabaseMetaData metaData = connection.getMetaData();
             ResultSet tables = metaData.getTables(null, null, tableName, new String[]{"TABLE"});
 
@@ -51,9 +53,10 @@ public class DatabaseManager {
                 return;
             }
 
+            // Use metadata to retrieve column names safely
             String query = "SELECT * FROM " + tableName;
-            try (PreparedStatement statement = connection.prepareStatement(query);
-                 ResultSet resultSet = statement.executeQuery()) {
+            try (Statement statement = connection.createStatement();
+                 ResultSet resultSet = statement.executeQuery(query)) {
 
                 int columnCount = resultSet.getMetaData().getColumnCount();
 
