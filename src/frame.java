@@ -3,7 +3,7 @@ import javax.swing.*;
 public class frame {
     public static void main(String[] args) {
         JFrame frame = new JFrame();
-        ImageIcon logo = new ImageIcon("resources/212650752.png");
+        ImageIcon logo = new ImageIcon("resources/logo.png");
 
         frame.setIconImage(logo.getImage());
         frame.setTitle("LearnSpace");

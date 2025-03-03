@@ -8,8 +8,8 @@ public class Login extends JFrame {
 
     public Login() {
         setTitle("Login UI");
-        setSize(1500, 750);
-        setUndecorated(true); // Remove title bar
+        setSize(1200, 700);
+//      setUndecorated(true); // Remove title bar
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -23,7 +23,7 @@ public class Login extends JFrame {
         leftPanel.setPreferredSize(new Dimension(600, 750));
         leftPanel.setLayout(new GridBagLayout());
 
-        ImageIcon logoIcon = new ImageIcon("C:/Users/adhia/OneDrive/Documents/LearnSpace/logo.png"); // Change path accordingly
+        ImageIcon logoIcon = new ImageIcon("resources/logo.png"); // Change path accordingly
         Image image = logoIcon.getImage().getScaledInstance(500, 500, Image.SCALE_SMOOTH);
         JLabel logoLabel = new JLabel(new ImageIcon(image));
         leftPanel.add(logoLabel, new GridBagConstraints());
