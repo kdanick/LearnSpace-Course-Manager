@@ -4,9 +4,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 public class Database {
-    private static final String URL = "jdbc:postgresql://localhost:5432/learnspace";
-    private static final String USER = "postgres";
-    private static final String PASSWORD = "passcode";
+    // Database connection URL, username, and password
+    private static final String URL = "jdbc:postgresql://localhost:5432/your_database"; // Replace with your database URL
+    private static final String USER = "your_user"; // Replace with your database username
 
     // Method to establish a connection to the database
     public static Connection connect() {
@@ -23,7 +23,7 @@ public class Database {
     // Method to authenticate user credentials
     public static boolean authenticate(String username, String password) {
         // SQL query to select the password for the given username
-        String sql = "SELECT password_hash FROM users WHERE name = ?";
+        String sql = "SELECT password FROM users WHERE username = ?";
 
         // Use try-with-resources to ensure resources are closed automatically
         try (Connection conn = connect(); // Establish a connection
