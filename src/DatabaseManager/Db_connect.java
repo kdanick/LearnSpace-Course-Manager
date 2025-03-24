@@ -7,7 +7,7 @@ import java.sql.SQLException;
 public class Db_connect {
     private static final String URL = "jdbc:postgresql://localhost:5432/learnspace";
     private static final String USER = "postgres";
-    private static final String PASSWORD = "password";
+    private static final String PASSWORD = "passcode";
 
     private Db_connect() {}
 
