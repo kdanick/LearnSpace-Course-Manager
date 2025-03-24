@@ -35,9 +35,9 @@ public class SidebarPanel extends JPanel {
         String[] buttonNames;
 
         if(userRole.equalsIgnoreCase("Admin")){
-            buttonNames = new String[] {"Admin Dashboard", "Students", "Settings", "Users", "Profile", "Logout"};
+            buttonNames = new String[] {"Dashboard", "Students", "Lecturers", "Courses", "Users", "Profile", "Logout(Not Page)"};
         } else if (userRole.equalsIgnoreCase("Lecturer")) {
-            buttonNames = new String[] {"Home", "Enrollments", "Courses", "Reports", "Profile", "Settings", "Logout"};
+            buttonNames = new String[] {"Home", "Students", "Enrollments", "Courses", "Profile", "Logout(Not Page)"};
         } else {
             buttonNames = new String[] {"LoginPage"};
         }

@@ -14,9 +14,11 @@ public class MainApp extends JPanel {
         contentPanel.add(new HomePage(), "Home");
         contentPanel.add(new SettingsPage(), "Settings");
         contentPanel.add(new ProfilePage(), "Profile");
+        contentPanel.add(new StudentsPage(), "Students");
 
-        SidebarPanel sidebar = new SidebarPanel(contentPanel, cardLayout, "Prof. James Doe", "Admin");
-//        SidebarPanel sidebar = new SidebarPanel(contentPanel, cardLayout, "Dr. John Doe", "Lecturer");
+
+//        SidebarPanel sidebar = new SidebarPanel(contentPanel, cardLayout, "Admin", "Admin");
+        SidebarPanel sidebar = new SidebarPanel(contentPanel, cardLayout, " Lecturer", "Lecturer");
 
         add(sidebar, BorderLayout.WEST);
         add(contentPanel, BorderLayout.CENTER);
