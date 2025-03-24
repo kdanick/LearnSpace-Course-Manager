@@ -230,10 +230,26 @@ public class DatabaseGUI extends JFrame {
         }
     }
 
+    private static void checkDatabaseConnection() {
+        System.out.println("Checking database connection...");
+        try(Connection connection = Db_connect.getConnection()) {
+            if (connection != null) {
+                System.out.println("✅ Database connection successful!");
+            } else {
+                System.out.println("❌ Failed to establish database connection.");
+            }
+        } catch(SQLException e) {
+            System.out.println("⚠️ Error connecting to the Database!");
+            e.printStackTrace();
+        }
+    }
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             DatabaseGUI gui = new DatabaseGUI();
             gui.setVisible(true);
         });
+
+        checkDatabaseConnection();
     }
 }
