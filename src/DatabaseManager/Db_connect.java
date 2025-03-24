@@ -5,8 +5,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class Db_connect {
-    private static final String URL = "jdbc:postgresql://localhost:5432/learnspace";
-    private static final String USER = "postgres";
+    private static final String URL = "jdbc:postgresql://localhost:5432/your_database";
+    private static final String USER = "your_user";
     private static final String PASSWORD = "password";
 
     private Db_connect() {}
