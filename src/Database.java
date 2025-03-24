@@ -7,7 +7,7 @@ public class Database {
     // Database connection URL, username, and password
     private static final String URL = "jdbc:postgresql://localhost:5432/your_database"; // Replace with your database URL
     private static final String USER = "your_user"; // Replace with your database username
-    private static final String PASSWORD = "your_password"; // Replace with your database password
+    private static final String PASSWORD = "password"; // Replace with your database password
 
     // Method to establish a connection to the database
     public static Connection connect() {
