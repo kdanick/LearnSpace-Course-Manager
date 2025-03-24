@@ -1,6 +1,5 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -79,50 +78,32 @@ public class Login extends JFrame {
         gbc.gridy = 4;
         formPanel.add(passwordField, gbc);
 
-// Login Button with Authentication Logic
+        // Login Button with Rounded Edges
         RoundedButton loginButton = new RoundedButton("Login");
         loginButton.setPreferredSize(new Dimension(300, 45));
-        loginButton.addActionListener(e -> {
-            String username = usernameField.getText().trim();
-            String password = new String(passwordField.getPassword());
-
-            if (username.isEmpty() || password.isEmpty()) {
-                JOptionPane.showMessageDialog(Login.this, "Please enter both username and password.", "Error", JOptionPane.ERROR_MESSAGE);
-            } else {
-                boolean isAuthenticated = Database.authenticate(username, password);
-                if (isAuthenticated) {
-                    JOptionPane.showMessageDialog(Login.this, "Login Successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
-                    // TODO: Open a new dashboard window
-                } else {
-                    JOptionPane.showMessageDialog(Login.this, "Invalid username or password.", "Login Failed", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        });
-
         gbc.gridy = 5;
         formPanel.add(loginButton, gbc);
-
 
         // Add components to right panel
         gbc.gridy = 1; // Reset y position for formPanel
         rightPanel.add(formPanel, gbc);
 
         // "Forgot Password?" Label
-        JLabel fPassLabel = new JLabel("Forgot Password?");
-        fPassLabel.setForeground(new Color(0, 123, 255)); // Blue color
-        fPassLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-        fPassLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        fPassLabel.addMouseListener(new MouseAdapter() {
+        JLabel forgetPasswordLabel = new JLabel("Forgot Password?");
+        forgetPasswordLabel.setForeground(new Color(0, 123, 255)); // Blue color
+        forgetPasswordLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        forgetPasswordLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        forgetPasswordLabel.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 new ForgotPasswordDialog(Login.this).setVisible(true); // Open dialog
             }
 
             public void mouseEntered(MouseEvent e) {
-                fPassLabel.setForeground(new Color(0, 86, 179)); // Darker blue on hover
+                forgetPasswordLabel.setForeground(new Color(0, 86, 179)); // Darker blue on hover
             }
 
             public void mouseExited(MouseEvent e) {
-                fPassLabel.setForeground(new Color(0, 123, 255)); // Reset color
+                forgetPasswordLabel.setForeground(new Color(0, 123, 255)); // Reset color
             }
         });
 
@@ -130,7 +111,7 @@ public class Login extends JFrame {
         gbc.gridy = 6; // Positioning for forgot password label
         gbc.gridwidth = 2; // Span two columns
         gbc.anchor = GridBagConstraints.CENTER; // Center align
-        formPanel.add(fPassLabel, gbc);
+        formPanel.add(forgetPasswordLabel, gbc);
 
         // Add Panels to Main Panel
         mainPanel.add(leftPanel, BorderLayout.WEST);
