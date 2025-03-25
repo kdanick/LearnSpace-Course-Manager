@@ -73,6 +73,17 @@ public class SidebarPanel extends JPanel {
                 }
             });
 
+            button.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if ("Logout(Not Page)".equals(name)) {
+                        showLogin();
+                    } else {
+                        cardLayout.show(contentPanel, name);
+                    }
+                }
+            });
+
             buttonPanel.add(button);
 
         }
@@ -85,5 +96,12 @@ public class SidebarPanel extends JPanel {
         add(userInfo, BorderLayout.NORTH);
         add(buttonPanel, BorderLayout.CENTER);
         add(sideFooter, BorderLayout.SOUTH);
+    }
+
+    private void showLogin() {
+        contentPanel.removeAll();
+        contentPanel.add(new LoginPage(new App()));
+        contentPanel.revalidate();
+        contentPanel.repaint();
     }
 }

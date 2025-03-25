@@ -1,3 +1,6 @@
+import DatabaseManager.Db_connect;
+import Round.*;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -45,6 +48,13 @@ public class Login extends JFrame {
         gbc.gridx = 0;
         gbc.anchor = GridBagConstraints.WEST; // Left align components
 
+        // Create error message label
+        JLabel EMLabel = new JLabel();
+        EMLabel.setForeground(Color.WHITE);
+        EMLabel.setBackground(Color.RED);
+        EMLabel.setOpaque(true); // Make the background visible
+        EMLabel.setVisible(false); // Initially hidden
+        EMLabel.setHorizontalAlignment(JLabel.CENTER);
         // Log In Title
         JLabel titleLabel = new JLabel("Log In");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 28));
@@ -78,149 +88,75 @@ public class Login extends JFrame {
         gbc.gridy = 4;
         formPanel.add(passwordField, gbc);
 
-        // Login Button with Rounded Edges
+        //Role Label
+        JLabel roleLabel = new JLabel("Role:");
+        roleLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+        gbc.gridy = 5;
+        formPanel.add(roleLabel, gbc);
+
+        //Role Text Field
+        RoundedTextField roleField = new RoundedTextField(20);
+        roleField.setPreferredSize(new Dimension(300, 40));
+        gbc.gridy = 6;
+        formPanel.add(roleField, gbc);
+
+// Login Button with Authentication Logic
         RoundedButton loginButton = new RoundedButton("Login");
         loginButton.setPreferredSize(new Dimension(300, 45));
-        gbc.gridy = 5;
+        loginButton.addActionListener(e -> {
+            String username = usernameField.getText().trim();
+            String password = new String(passwordField.getPassword());
+            String role = roleField.getText();
+
+            if (!Db_connect.authenticate(username, password, role)) {
+                EMLabel.setText("Invalid username, password, or role.");
+                EMLabel.setVisible(true); // Show error message
+            } else {
+                EMLabel.setText("Login Successful");
+                EMLabel.setVisible(true);
+            }
+        });
+
+        gbc.gridy = 7;
         formPanel.add(loginButton, gbc);
+
 
         // Add components to right panel
         gbc.gridy = 1; // Reset y position for formPanel
         rightPanel.add(formPanel, gbc);
 
         // "Forgot Password?" Label
-        JLabel forgetPasswordLabel = new JLabel("Forgot Password?");
-        forgetPasswordLabel.setForeground(new Color(0, 123, 255)); // Blue color
-        forgetPasswordLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-        forgetPasswordLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        forgetPasswordLabel.addMouseListener(new MouseAdapter() {
+        JLabel fPassLabel = new JLabel("Forgot Password?");
+        fPassLabel.setForeground(new Color(0, 123, 255)); // Blue color
+        fPassLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        fPassLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        fPassLabel.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 new ForgotPasswordDialog(Login.this).setVisible(true); // Open dialog
             }
 
             public void mouseEntered(MouseEvent e) {
-                forgetPasswordLabel.setForeground(new Color(0, 86, 179)); // Darker blue on hover
+                fPassLabel.setForeground(new Color(0, 86, 179)); // Darker blue on hover
             }
 
             public void mouseExited(MouseEvent e) {
-                forgetPasswordLabel.setForeground(new Color(0, 123, 255)); // Reset color
+                fPassLabel.setForeground(new Color(0, 123, 255)); // Reset color
             }
         });
 
         // Add forgot password label to formPanel
-        gbc.gridy = 6; // Positioning for forgot password label
+        gbc.gridy = 8; // Positioning for forgot password label
         gbc.gridwidth = 2; // Span two columns
         gbc.anchor = GridBagConstraints.CENTER; // Center align
-        formPanel.add(forgetPasswordLabel, gbc);
+        formPanel.add(fPassLabel, gbc);
 
         // Add Panels to Main Panel
         mainPanel.add(leftPanel, BorderLayout.WEST);
         mainPanel.add(rightPanel, BorderLayout.CENTER);
 
+        add(EMLabel, BorderLayout.NORTH); // Add error message label at the top
         setVisible(true); // Call this only once
     }
-
-    // Custom Rounded TextField
-    class RoundedTextField extends JTextField {
-        private int radius = 25; // Corner radius for rounding
-
-        public RoundedTextField(int columns) {
-            super(columns);
-            setOpaque(false);  // Make background transparent
-            setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15)); // Adjust padding
-        }
-
-        protected void paintComponent(Graphics g) {
-            Graphics2D g2 = (Graphics2D) g.create();
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-            // Background color
-            g2.setColor(Color.WHITE);
-            g2.fillRoundRect(1, 1, getWidth() - 2, getHeight() - 2, radius, radius);
-
-            // Border color and thickness
-            g2.setColor(Color.GRAY);
-            g2.setStroke(new BasicStroke(2)); // Border thickness
-            g2.drawRoundRect(1, 1, getWidth() - 2, getHeight() - 2, radius, radius);
-
-            g2.dispose();
-            super.paintComponent(g);
-        }
-    }
-
-    // Custom Rounded PasswordField
-    class RoundedPasswordField extends JPasswordField {
-        private int radius;
-
-        public RoundedPasswordField(int columns, int radius) {
-            super(columns);
-            this.radius = radius;
-            setOpaque(false); // Make background transparent
-            setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-        }
-
-        protected void paintComponent(Graphics g) {
-            Graphics2D g2 = (Graphics2D) g.create();
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-            g2.setColor(Color.WHITE);
-            g2.fillRoundRect(0, 0, getWidth(), getHeight(), radius, radius);
-
-            g2.setColor(Color.GRAY);
-            g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, radius, radius);
-
-            g2.dispose();
-            super.paintComponent(g);
-        }
-    }
-
-    // Custom Rounded Button with Hover Effect
-    class RoundedButton extends JButton {
-        private int radius = 25; // Corner radius for rounding
-        private Color defaultColor = new Color(0, 123, 255); // Default button color
-        private Color hoverColor = new Color(0, 86, 179); // Color on hover
-
-        public RoundedButton(String text) {
-            super(text);
-            setFocusPainted(false); // Remove focus painting
-            setContentAreaFilled(false); // Make transparent
-            setOpaque(false); // Make background transparent
-            setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10)); // Adjust padding
-            setForeground(Color.WHITE); // Text color
-            setBackground(defaultColor); // Set default background color
-
-            // Add hover effect
-            addMouseListener(new MouseAdapter() {
-                public void mouseEntered(MouseEvent e) {
-                    setBackground(hoverColor); // Change background on hover
-                    repaint();
-                }
-
-                public void mouseExited(MouseEvent e) {
-                    setBackground(defaultColor); // Reset background color
-                    repaint();
-                }
-            });
-        }
-
-        protected void paintComponent(Graphics g) {
-            Graphics2D g2 = (Graphics2D) g.create();
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-            g2.setColor(getBackground());
-            g2.fillRoundRect(0, 0, getWidth(), getHeight(), radius, radius); // Rounded background
-
-            g2.setColor(Color.WHITE); // Text color
-            g2.setFont(getFont());
-            FontMetrics fm = g2.getFontMetrics();
-            int textWidth = fm.stringWidth(getText());
-            int textHeight = fm.getAscent();
-            g2.drawString(getText(), (getWidth() - textWidth) / 2, (getHeight() + textHeight) / 2 - 3); // Centered text
-
-            g2.dispose();
-        }
-    }
-
     // Dialog for Forgot Password
     class ForgotPasswordDialog extends JDialog {
         public ForgotPasswordDialog(JFrame parent) {
