@@ -6,23 +6,47 @@ public class AdminDashboard extends JPanel {
         setLayout(new BorderLayout());
         setBackground(Color.LIGHT_GRAY);
 
+        // Title Label
         JLabel titleLabel = new JLabel("Admin Dashboard", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         add(titleLabel, BorderLayout.NORTH);
 
-        // Placeholder panel for dashboard widgets
-        JPanel contentPanel = new JPanel();
-        contentPanel.setLayout(new GridLayout(1, 4, 20, 0)); // 2x2 grid layout
-        contentPanel.setBackground(Color.LIGHT_GRAY);
-        contentPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        // **TOP PANEL: Dashboard Cards**
+        JPanel cardsPanel = new JPanel();
+        cardsPanel.setLayout(new GridLayout(1, 4, 20, 0));
+        cardsPanel.setBackground(Color.LIGHT_GRAY);
+        cardsPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 10, 20));
 
-        // Add sample dashboard cards
-        contentPanel.add(createDashboardCard("Users", "100"));
-        contentPanel.add(createDashboardCard("Courses", "50"));
-        contentPanel.add(createDashboardCard("Reports", "30"));
-        contentPanel.add(createDashboardCard("Settings", "..."));
+        cardsPanel.add(createDashboardCard("Users", "100"));
+        cardsPanel.add(createDashboardCard("Courses", "50"));
+        cardsPanel.add(createDashboardCard("Reports", "30"));
+        cardsPanel.add(createDashboardCard("Settings", "..."));
 
-        add(contentPanel, BorderLayout.NORTH);
+        // **BOTTOM PANEL: Graphs and Tables**
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.setLayout(new GridLayout(1, 2, 20, 0)); // Two columns: One for Graphs, One for Tables
+        bottomPanel.setBackground(Color.LIGHT_GRAY);
+        bottomPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 20, 20));
+
+        // Placeholder panels for Graphs & Tables
+        JPanel graphPanel = new JPanel();
+        graphPanel.setBackground(Color.WHITE);
+        graphPanel.setBorder(BorderFactory.createTitledBorder("User Statistics"));
+
+        JPanel tablePanel = new JPanel();
+        tablePanel.setBackground(Color.WHITE);
+        tablePanel.setBorder(BorderFactory.createTitledBorder("Recent Activities"));
+
+        bottomPanel.add(graphPanel);
+        bottomPanel.add(tablePanel);
+
+        // **MAIN CONTENT PANEL**
+        JPanel mainContent = new JPanel();
+        mainContent.setLayout(new BorderLayout());
+        mainContent.add(cardsPanel, BorderLayout.NORTH);
+        mainContent.add(bottomPanel, BorderLayout.CENTER);
+
+        add(mainContent, BorderLayout.CENTER);
     }
 
     private JPanel createDashboardCard(String title, String value) {
