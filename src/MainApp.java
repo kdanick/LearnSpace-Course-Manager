@@ -19,8 +19,8 @@ public class MainApp extends JPanel {
         contentPanel.add(new AdminDashboard(), "Dashboard");
 
 
-        SidebarPanel sidebar = new SidebarPanel(contentPanel, cardLayout, "Admin", "Admin");
-//        SidebarPanel sidebar = new SidebarPanel(contentPanel, cardLayout, " Lecturer", "Lecturer");
+//        SidebarPanel sidebar = new SidebarPanel(contentPanel, cardLayout, "Admin", "Admin");
+        SidebarPanel sidebar = new SidebarPanel(contentPanel, cardLayout, " Lecturer", "Lecturer");
 
         add(sidebar, BorderLayout.WEST);
         add(contentPanel, BorderLayout.CENTER);
