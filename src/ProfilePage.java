@@ -92,7 +92,7 @@ public class ProfilePage extends JPanel {
         String[] data = {"Unknown", "Unknown", "Unknown", "Unknown", "default-profile.png"}; // Removed bio
 
         try (Connection conn = DriverManager.getConnection(url, user, password)) {
-            String query = "SELECT name, email, phone, role, profile_picture FROM users WHERE email = ?";
+            String query = "SELECT name, email, phone_no, role FROM users WHERE email = ?";
             PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setString(1, email);
             ResultSet rs = stmt.executeQuery();
