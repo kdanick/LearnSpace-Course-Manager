@@ -7,9 +7,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class Login extends JFrame {
-    private int mouseX, mouseY; // For dragging
-
-    public Login() {
+    public Login(App app) {
         // Set up the JFrame properties
         setTitle("Login UI");
         setSize(1200, 700);
@@ -37,6 +35,13 @@ public class Login extends JFrame {
         rightPanel.setBackground(Color.WHITE);
         rightPanel.setLayout(new GridBagLayout()); // Use GridBagLayout for better alignment
 
+        // Error message label
+        JLabel EMLabel = new JLabel();
+        EMLabel.setForeground(Color.RED);
+        EMLabel.setHorizontalAlignment(JLabel.CENTER);
+        EMLabel.setVisible(false); // Initially hidden
+        mainPanel.add(EMLabel, BorderLayout.NORTH); // Add error message label at the top
+
         // Form Panel for Login
         JPanel formPanel = new JPanel(new GridBagLayout());
         formPanel.setBackground(Color.WHITE);
@@ -48,13 +53,6 @@ public class Login extends JFrame {
         gbc.gridx = 0;
         gbc.anchor = GridBagConstraints.WEST; // Left align components
 
-        // Create error message label
-        JLabel EMLabel = new JLabel();
-        EMLabel.setForeground(Color.WHITE);
-        EMLabel.setBackground(Color.RED);
-        EMLabel.setOpaque(true); // Make the background visible
-        EMLabel.setVisible(false); // Initially hidden
-        EMLabel.setHorizontalAlignment(JLabel.CENTER);
         // Log In Title
         JLabel titleLabel = new JLabel("Log In");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 28));
@@ -88,19 +86,19 @@ public class Login extends JFrame {
         gbc.gridy = 4;
         formPanel.add(passwordField, gbc);
 
-        //Role Label
+        // Role Label
         JLabel roleLabel = new JLabel("Role:");
         roleLabel.setFont(new Font("Arial", Font.PLAIN, 16));
         gbc.gridy = 5;
         formPanel.add(roleLabel, gbc);
 
-        //Role Text Field
+        // Role Text Field
         RoundedTextField roleField = new RoundedTextField(20);
         roleField.setPreferredSize(new Dimension(300, 40));
         gbc.gridy = 6;
         formPanel.add(roleField, gbc);
 
-// Login Button with Authentication Logic
+        // Login Button with Authentication Logic
         RoundedButton loginButton = new RoundedButton("Login");
         loginButton.setPreferredSize(new Dimension(300, 45));
         loginButton.addActionListener(e -> {
@@ -108,22 +106,26 @@ public class Login extends JFrame {
             String password = new String(passwordField.getPassword());
             String role = roleField.getText();
 
+            // Check if the credentials are valid
             if (!Db_connect.authenticate(username, password, role)) {
+                // Show error message if authentication fails
                 EMLabel.setText("Invalid username, password, or role.");
                 EMLabel.setVisible(true); // Show error message
             } else {
+                // If authentication is successful
                 EMLabel.setText("Login Successful");
                 EMLabel.setVisible(true);
+
+                // Transition to the main application
+                SwingUtilities.invokeLater(() -> {
+                    app.showMainApp(); // Use app reference to show main application
+                    dispose(); // Close the login frame
+                });
             }
         });
 
         gbc.gridy = 7;
         formPanel.add(loginButton, gbc);
-
-
-        // Add components to right panel
-        gbc.gridy = 1; // Reset y position for formPanel
-        rightPanel.add(formPanel, gbc);
 
         // "Forgot Password?" Label
         JLabel fPassLabel = new JLabel("Forgot Password?");
@@ -153,10 +155,11 @@ public class Login extends JFrame {
         // Add Panels to Main Panel
         mainPanel.add(leftPanel, BorderLayout.WEST);
         mainPanel.add(rightPanel, BorderLayout.CENTER);
+        rightPanel.add(formPanel); // Add formPanel to rightPanel
 
-        add(EMLabel, BorderLayout.NORTH); // Add error message label at the top
         setVisible(true); // Call this only once
     }
+
     // Dialog for Forgot Password
     class ForgotPasswordDialog extends JDialog {
         public ForgotPasswordDialog(JFrame parent) {
@@ -206,9 +209,5 @@ public class Login extends JFrame {
             gbc.anchor = GridBagConstraints.CENTER; // Center align
             add(submitButton, gbc);
         }
-    }
-
-    public static void main(String[] args) {
-        new Login(); // Launch the login UI
     }
 }

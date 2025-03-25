@@ -17,17 +17,23 @@ public class App {
     }
 
     public void showLogin() {
-        frame.setContentPane(new LoginPage(this));
-        frame.setVisible(true);
+        frame.setContentPane(new Login(this));
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(1200, 700);
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true); // Show the login frame
     }
 
     public void showMainApp() {
         frame.setContentPane(new MainApp()); // Switch to main app
-        frame.revalidate();
-        frame.repaint();
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(1200, 700);
+        frame.setLocationRelativeTo(null);
+        frame.setContentPane(new MainApp()); // Set the content pane to MainApp
+        frame.setVisible(true); // Show the main application frame
     }
 
     public static void main(String[] args) {
-        new App();
+        SwingUtilities.invokeLater(App::new);
     }
 }
