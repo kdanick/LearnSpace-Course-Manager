@@ -13,7 +13,7 @@ public class MainApp extends JPanel {
 
         contentPanel.add(new HomePage(), "Home");
         contentPanel.add(new SettingsPage(), "Settings");
-        contentPanel.add(new ProfilePage(), "Profile");
+        contentPanel.add(new ProfilePage("example@email.com"), "Profile");
         contentPanel.add(new StudentsPage(), "Students");
 
 
