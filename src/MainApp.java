@@ -16,6 +16,7 @@ public class MainApp extends JPanel {
         contentPanel.add(new ProfilePage("example@email.com"), "Profile");
         contentPanel.add(new StudentsPage(), "Students");
         contentPanel.add(new CoursePage(), "Courses");
+        contentPanel.add(new AdminDashboard(), "Dashboard");
 
 
 //        SidebarPanel sidebar = new SidebarPanel(contentPanel, cardLayout, "Admin", "Admin");
