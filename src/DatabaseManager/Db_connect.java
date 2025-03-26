@@ -42,16 +42,16 @@ public class Db_connect {
         }
     }
 
-    public static boolean authenticate(String username, String password, String role) {
+    public static boolean authenticate(String name, String password_hash, String role) {
         // SQL query to select the password for the given username and role
-        String sql = "SELECT password FROM users WHERE username = ? AND role = ?";
+        String sql = "SELECT password_hash FROM users WHERE name = ? AND role = ?";
 
         // Use try-with-resources to ensure resources are closed automatically
         try (Connection conn = getConnection(); // Establish a connection
              PreparedStatement pstmt = conn.prepareStatement(sql)) { // Prepare the SQL statement
 
             // Set the username and role parameters in the SQL query
-            pstmt.setString(1, username);
+            pstmt.setString(1, name);
             pstmt.setString(2, role); // Set the role parameter
 
             ResultSet rs = pstmt.executeQuery(); // Execute the query
@@ -59,9 +59,9 @@ public class Db_connect {
             // Check if a result is returned
             if (rs.next()) {
                 // Retrieve the stored password from the result set
-                String storedPassword = rs.getString("password");
+                String storedPassword = rs.getString("password_hash");
                 // Compare the stored password with the provided password
-                return storedPassword.equals(password); // Replace with password hashing if needed
+                return storedPassword.equals(password_hash); // Replace with password hashing if needed
             }
         } catch (Exception e) {
             // Print the stack trace if an error occurs

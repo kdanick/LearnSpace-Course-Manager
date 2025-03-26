@@ -102,12 +102,12 @@ public class Login extends JFrame {
         RoundedButton loginButton = new RoundedButton("Login");
         loginButton.setPreferredSize(new Dimension(300, 45));
         loginButton.addActionListener(e -> {
-            String username = usernameField.getText().trim();
-            String password = new String(passwordField.getPassword());
+            String name = usernameField.getText().trim();
+            String password_hash = new String(passwordField.getPassword());
             String role = roleField.getText();
 
             // Check if the credentials are valid
-            if (!Db_connect.authenticate(username, password, role)) {
+            if (!Db_connect.authenticate(name, password_hash, role)) {
                 // Show error message if authentication fails
                 EMLabel.setText("Invalid username, password, or role.");
                 EMLabel.setVisible(true); // Show error message
