@@ -27,6 +27,7 @@ public class MainApp extends JPanel {
         contentPanel.add(new AdminDashboard(), "Dashboard");
         contentPanel.add(new LecturersPage(), "Lecturers");
         contentPanel.add(new UsersPage(), "Users");
+        contentPanel.add(new EnrollmentPage(), "Enrollments");
     }
 
     private SidebarPanel createSidebar(String role, String username) {
