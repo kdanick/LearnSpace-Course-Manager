@@ -10,6 +10,7 @@ import java.util.List;
 
 public class UsersPage extends JPanel {
     private JTable table; // Make table accessible for refreshing
+
     public UsersPage() {
         setBackground(Color.WHITE); // White background
         setLayout(new BorderLayout());
@@ -106,15 +107,14 @@ public class UsersPage extends JPanel {
         dialog.setLocationRelativeTo(this);
         dialog.setLayout(new GridLayout(7, 2));
 
-
         JTextField user_idField = new JTextField(user != null ? user.getUser_id() : "");
-        TextField usernameField = new TextField(user != null ? user.getUsername() : "");
+        JTextField usernameField = new JTextField(user != null ? user.getUsername() : "");
         JTextField emailField = new JTextField(user != null ? user.getEmail() : "");
         JTextField passwordField = new JTextField(user != null ? user.getPassword() : "");
         JTextField roleField = new JTextField(user != null ? user.getRole() : "");
         JTextField phoneField = new JTextField(user != null ? user.getPhoneNumber() : "");
 
-        dialog.add(new JLabel("User_ID"));
+        dialog.add(new JLabel("User ID:"));
         dialog.add(user_idField);
         dialog.add(new JLabel("Username:"));
         dialog.add(usernameField);
@@ -130,7 +130,7 @@ public class UsersPage extends JPanel {
         JButton saveButton = new JButton(user == null ? "Add" : "Save");
         saveButton.addActionListener(e -> {
             if (user == null) {
-                addUser(user_idField.getText(),usernameField.getText(), emailField.getText(), passwordField.getText(), roleField.getText(), phoneField.getText());
+                addUser(user_idField.getText(), usernameField.getText(), emailField.getText(), passwordField.getText(), roleField.getText(), phoneField.getText());
             } else {
                 updateUser(user.getUser_id(), usernameField.getText(), emailField.getText(), passwordField.getText(), roleField.getText(), phoneField.getText());
             }
@@ -142,23 +142,23 @@ public class UsersPage extends JPanel {
         dialog.setVisible(true);
     }
 
-    private void addUser(String user_id,String username, String email, String password, String role, String phoneNumber) {
-        String sql = "INSERT INTO users (user_id,username, email, password, role, phonenumber) VALUES (?, ?, ?, ?, ?, ?)";
+    private void addUser(String user_id, String name, String email, String password_hash, String role, String phone_no) {
+        String sql = "INSERT INTO users (user_id, name, email, password_hash, role, phone_no) VALUES (?, ?, ?, ?, ?, ?)";
 
         // Input validation
-        if (username.isEmpty() || email.isEmpty() || password.isEmpty() || role.isEmpty() || phoneNumber.isEmpty()) {
+        if (name.isEmpty() || email.isEmpty() || password_hash.isEmpty() || role.isEmpty() || phone_no.isEmpty()) {
             JOptionPane.showMessageDialog(this, "All fields are required.");
             return;
         }
 
         try (Connection conn = Db_connect.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1,user_id);
-            pstmt.setString(2, username);
+            pstmt.setString(1, user_id);
+            pstmt.setString(2, name);
             pstmt.setString(3, email);
-            pstmt.setString(4, password);
+            pstmt.setString(4, password_hash);
             pstmt.setString(5, role);
-            pstmt.setString(6, phoneNumber);
+            pstmt.setString(6, phone_no);
             pstmt.executeUpdate();
             JOptionPane.showMessageDialog(this, "User added successfully.");
         } catch (SQLException e) {
@@ -168,7 +168,7 @@ public class UsersPage extends JPanel {
     }
 
     private void updateUser(String userId, String username, String email, String password, String role, String phoneNumber) {
-        String sql = "UPDATE users SET username = ?, email = ?, password = ?, role = ?, phonenumber = ? WHERE user_id = ?";
+        String sql = "UPDATE users SET name = ?, email = ?, password_hash = ?, role = ?, phone_no = ? WHERE user_id = ?";
 
         try (Connection conn = Db_connect.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -219,20 +219,21 @@ public class UsersPage extends JPanel {
 
     private List<User> getAllUsers() {
         List<User> users = new ArrayList<>();
-        String sql = "SELECT user_id, username, email, password, role, phonenumber FROM users";
+        String sql = "SELECT user_id, name, email, password_hash, role, phone_no FROM users";
 
         try (Connection conn = Db_connect.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
             while (rs.next()) {
                 String user_id = rs.getString("user_id");
-                String username = rs.getString("username");
+                String name = rs.getString("name"); // Corrected column name
                 String email = rs.getString("email");
-                String password = rs.getString("password");
+                String password_hash = rs.getString("password_hash"); // Corrected column name
                 String role = rs.getString("role");
-                String phonenumber = rs.getString("phonenumber");
-                users.add(new User(user_id, username, email, password, role, phonenumber));
+                String phone_no = rs.getString("phone_no"); // Corrected column name
+                users.add(new User(user_id, name, email, password_hash, role, phone_no));
             }
+            System.out.println("Fetched users: " + users.size()); // Debugging line
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -242,27 +243,27 @@ public class UsersPage extends JPanel {
     // Inner User class
     private class User {
         private String user_id;
-        private String username;
+        private String name;
         private String email;
+        private String password_hash;
         private String role;
-        private String password;
-        private String phonenumber;
+        private String phone_no;
 
-        public User(String user_id, String username, String email, String password, String role, String phonenumber) {
+        public User(String user_id, String name, String email, String password_hash, String role, String phone_no) {
             this.user_id = user_id;
-            this.username = username;
+            this.name = name;
             this.email = email;
-            this.password = password;
+            this.password_hash = password_hash;
             this.role = role;
-            this.phonenumber = phonenumber;
+            this.phone_no = phone_no;
         }
 
         // Getters
         public String getUser_id() { return user_id; }
-        public String getUsername() { return username; }
+        public String getUsername() { return name; }
         public String getEmail() { return email; }
-        public String getPassword() { return password; }
+        public String getPassword() { return password_hash; }
         public String getRole() { return role; }
-        public String getPhoneNumber() { return phonenumber; }
+        public String getPhoneNumber() { return phone_no; }
     }
 }

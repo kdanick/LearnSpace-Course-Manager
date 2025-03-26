@@ -17,7 +17,7 @@ public class App {
     }
 
     public void showLogin() {
-        frame.setContentPane(new Login(this));
+        frame.setContentPane(new LoginPage(this));
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1200, 700);
         frame.setLocationRelativeTo(null);

@@ -18,6 +18,7 @@ public class MainApp extends JPanel {
         contentPanel.add(new CoursePage(), "Courses");
         contentPanel.add(new AdminDashboard(), "Dashboard");
         contentPanel.add(new LecturersPage(), "Lecturers");
+        contentPanel.add(new UsersPage(), "Users");
 
 
 
