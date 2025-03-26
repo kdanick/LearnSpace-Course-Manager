@@ -134,31 +134,41 @@ public class DatabaseGUI extends JFrame {
     }
 
     private void insertData(String tableName) {
-        try(Connection connection = Db_connect.getConnection()) {
+        try (Connection connection = Db_connect.getConnection()) {
             if (connection == null) {
                 JOptionPane.showMessageDialog(this, "❌ Failed to establish database connection.");
                 return;
             }
 
             DatabaseMetaData metaData = connection.getMetaData();
-            ResultSet columns = metaData.getColumns(null, null, tableName, null);
+            ResultSet columns = metaData.getColumns(null, null, tableName.toLowerCase(), null);
 
             StringBuilder query = new StringBuilder("INSERT INTO " + tableName + " (");
             StringBuilder values = new StringBuilder(" VALUES (");
-            Object[] inputs = new Object[10];
+            Object[] inputs = new Object[10]; // Array for user inputs
             int columnCount = 0;
             int index = 0;
 
             while (columns.next()) {
                 String columnName = columns.getString("COLUMN_NAME");
                 String columnType = columns.getString("TYPE_NAME");
+                String autoIncrement = columns.getString("IS_AUTOINCREMENT");
+                String defaultValue = columns.getString("COLUMN_DEF"); // Check if column has a default
 
+                // 🚀 Ignore auto-incremented columns and default timestamp columns
+                if ("YES".equalsIgnoreCase(autoIncrement) || defaultValue != null) {
+                    continue;
+                }
+
+                // 🔄 Prompt user for input
                 String input = JOptionPane.showInputDialog(this, "Enter value for " + columnName + " (" + columnType + "):");
+                if (input == null) return; // User canceled input
 
-                if (input == null) return;
-
+                // Handle different data types
                 if (columnType.equalsIgnoreCase("int4") || columnType.equalsIgnoreCase("integer")) {
                     inputs[index] = Integer.parseInt(input);
+                } else if (columnType.toLowerCase().startsWith("numeric") || columnType.toLowerCase().startsWith("decimal")) {
+                    inputs[index] = new java.math.BigDecimal(input);
                 } else {
                     inputs[index] = input;
                 }
@@ -169,10 +179,13 @@ public class DatabaseGUI extends JFrame {
                 columnCount++;
                 index++;
             }
+
             if (columnCount == 0) {
-                JOptionPane.showMessageDialog(this, "❌ No columns found in table: " + tableName);
+                JOptionPane.showMessageDialog(this, "❌ No valid columns found in table: " + tableName);
+                return;
             }
 
+            // 🔧 Remove trailing commas
             query.setLength(query.length() - 2);
             values.setLength(values.length() - 2);
             query.append(")").append(values).append(")");
@@ -184,17 +197,19 @@ public class DatabaseGUI extends JFrame {
 
                 int rowsInserted = preparedStatement.executeUpdate();
                 if (rowsInserted > 0) {
-                    JOptionPane.showMessageDialog(this, "✅ Data inserted successfully into " + tableName);
+                    JOptionPane.showMessageDialog(this, "✅ Data inserted successfully into " + tableName.toLowerCase());
                 }
             }
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "❌ Invalid input type. Ensure numbers are entered correctly.");
             e.printStackTrace();
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "⚠️ Error inserting data into table: " + tableName);
+            JOptionPane.showMessageDialog(this, "⚠️ Error inserting data into table: " + tableName.toLowerCase());
             e.printStackTrace();
         }
     }
+
+
 
     private void deleteRow() {
         if (selectedRow == -1 || lastDisplayedTable == null) {
