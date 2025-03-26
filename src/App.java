@@ -9,7 +9,7 @@ public class App {
         Image logo = Toolkit.getDefaultToolkit().getImage("resources/logo.png");
         frame.setIconImage(logo);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(1100, 660);
+        frame.setSize(1200, 700);
         frame.setLocationRelativeTo(null);
         frame.setResizable(true);
 
@@ -17,23 +17,18 @@ public class App {
     }
 
     public void showLogin() {
-        frame.setContentPane(new LoginPage(this));
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(1200, 700);
-        frame.setLocationRelativeTo(null);
+        frame.setContentPane(new Login(this));
         frame.setVisible(true); // Show the login frame
     }
 
-    public void showMainApp() {
-        frame.setContentPane(new MainApp()); // Switch to main app
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(1200, 700);
-        frame.setLocationRelativeTo(null);
-        frame.setContentPane(new MainApp()); // Set the content pane to MainApp
+    public void showMainApp(String role, String username) {
+        frame.setContentPane(new MainApp(role, username)); // Switch to main app
         frame.setVisible(true); // Show the main application frame
     }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(App::new);
     }
+
+
 }

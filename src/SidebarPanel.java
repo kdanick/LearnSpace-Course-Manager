@@ -17,6 +17,7 @@ public class SidebarPanel extends JPanel {
         setBackground(Color.DARK_GRAY);
         setLayout(new BorderLayout());
 
+        // User Info Panel
         JPanel userInfo = new JPanel(new BorderLayout());
         userInfo.setBackground(Color.DARK_GRAY);
         userInfo.setPreferredSize(new Dimension(SIDE_WIDTH, 150));
@@ -27,65 +28,16 @@ public class SidebarPanel extends JPanel {
 
         userInfo.add(usernameLabel, BorderLayout.CENTER);
 
+        // Button Panel
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
         buttonPanel.setBackground(Color.DARK_GRAY);
-//        buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
 
-        String[] buttonNames;
-
-        if(userRole.equalsIgnoreCase("Admin")){
-            buttonNames = new String[] {"Dashboard", "Students", "Lecturers", "Courses", "Users", "Profile", "Logout(Not Page)"};
-        } else if (userRole.equalsIgnoreCase("Lecturer")) {
-            buttonNames = new String[] {"Home", "Students", "Enrollments", "Courses", "Profile", "Logout(Not Page)"};
-        } else {
-            buttonNames = new String[] {"LoginPage"};
-        }
+        String[] buttonNames = getButtonNames(userRole);
 
         for (String name : buttonNames) {
-            JButton button = new JButton(name);
-            button.setAlignmentX(Component.CENTER_ALIGNMENT);
-            button.setMaximumSize(new Dimension(SIDE_WIDTH, 40)); // Set fixed size to prevent stretching
-            button.setPreferredSize(new Dimension(SIDE_WIDTH, 40));
-            button.setBackground(new Color(60, 63, 65));
-            button.setForeground(Color.WHITE);
-            button.setFont(new Font("Arial", Font.BOLD, 14));
-            button.setFocusPainted(false);
-            button.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-
-//            Hover effect
-            button.addMouseListener(new java.awt.event.MouseAdapter() {
-                public void mouseEntered(java.awt.event.MouseEvent evt) {
-                    button.setBackground(new Color(80, 83, 85));
-                    button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-                }
-
-                public void mouseExited(java.awt.event.MouseEvent evt) {
-                    button.setBackground(new Color(60, 63, 65));
-                }
-            });
-
-            // Button Click Action
-            button.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    cardLayout.show(contentPanel, name);
-                }
-            });
-
-            button.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    if ("Logout(Not Page)".equals(name)) {
-                        showLogin();
-                    } else {
-                        cardLayout.show(contentPanel, name);
-                    }
-                }
-            });
-
+            JButton button = createButton(name);
             buttonPanel.add(button);
-
         }
 
         JLabel sideFooter = new JLabel("© 2025 LearnSpace. All Rights Reserved.", SwingConstants.CENTER);
@@ -96,6 +48,54 @@ public class SidebarPanel extends JPanel {
         add(userInfo, BorderLayout.NORTH);
         add(buttonPanel, BorderLayout.CENTER);
         add(sideFooter, BorderLayout.SOUTH);
+    }
+
+    private String[] getButtonNames(String userRole) {
+        if (userRole.equalsIgnoreCase("Admin")) {
+            return new String[] {"Dashboard", "Students", "Lecturers", "Courses", "Users", "Profile", "Logout"};
+        } else if (userRole.equalsIgnoreCase("Lecturer")) {
+            return new String[] {"Home", "Students", "Enrollments", "Courses", "Profile", "Logout"};
+        } else {
+            return new String[] {"LoginPage"};
+        }
+    }
+
+    private JButton createButton(String name) {
+        JButton button = new JButton(name);
+        button.setAlignmentX(Component.CENTER_ALIGNMENT);
+        button.setMaximumSize(new Dimension(SIDE_WIDTH, 40));
+        button.setPreferredSize(new Dimension(SIDE_WIDTH, 40));
+        button.setBackground(new Color(60, 63, 65));
+        button.setForeground(Color.WHITE);
+        button.setFont(new Font("Arial", Font.BOLD, 14));
+        button.setFocusPainted(false);
+        button.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        // Hover effect
+        button.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                button.setBackground(new Color(80, 83, 85));
+                button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                button.setBackground(new Color(60, 63, 65));
+            }
+        });
+
+        // Button Click Action
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if ("Logout".equals(name)) {
+                    showLogin();
+                } else {
+                    cardLayout.show(contentPanel, name);
+                }
+            }
+        });
+
+        return button;
     }
 
     private void showLogin() {

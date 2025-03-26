@@ -25,22 +25,26 @@ public class Login extends JFrame {
         leftPanel.setLayout(new GridBagLayout());
 
         // Load and display logo
-        ImageIcon logoIcon = new ImageIcon("resources/logo.png"); // Change path accordingly
-        Image image = logoIcon.getImage().getScaledInstance(500, 500, Image.SCALE_SMOOTH);
-        JLabel logoLabel = new JLabel(new ImageIcon(image));
-        leftPanel.add(logoLabel, new GridBagConstraints());
+        ImageIcon logoIcon = new ImageIcon("resources/logo.png");
+        if (logoIcon.getIconWidth() == -1) {
+            System.err.println("Logo image not found.");
+        } else {
+            Image image = logoIcon.getImage().getScaledInstance(500, 500, Image.SCALE_SMOOTH);
+            JLabel logoLabel = new JLabel(new ImageIcon(image));
+            leftPanel.add(logoLabel, new GridBagConstraints());
+        }
 
         // Right Panel (Login Section)
         JPanel rightPanel = new JPanel();
         rightPanel.setBackground(Color.WHITE);
-        rightPanel.setLayout(new GridBagLayout()); // Use GridBagLayout for better alignment
+        rightPanel.setLayout(new GridBagLayout());
 
         // Error message label
         JLabel EMLabel = new JLabel();
         EMLabel.setForeground(Color.RED);
         EMLabel.setHorizontalAlignment(JLabel.CENTER);
         EMLabel.setVisible(false); // Initially hidden
-        mainPanel.add(EMLabel, BorderLayout.NORTH); // Add error message label at the top
+        mainPanel.add(EMLabel, BorderLayout.NORTH);
 
         // Form Panel for Login
         JPanel formPanel = new JPanel(new GridBagLayout());
@@ -51,21 +55,20 @@ public class Login extends JFrame {
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = 0;
-        gbc.anchor = GridBagConstraints.WEST; // Left align components
+        gbc.anchor = GridBagConstraints.WEST;
 
         // Log In Title
         JLabel titleLabel = new JLabel("Log In");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 28));
-        titleLabel.setHorizontalAlignment(SwingConstants.LEFT);
         gbc.gridy = 0;
-        gbc.gridwidth = 2; // Span two columns
+        gbc.gridwidth = 2;
         formPanel.add(titleLabel, gbc);
 
         // Username Label
         JLabel usernameLabel = new JLabel("Username:");
         usernameLabel.setFont(new Font("Arial", Font.PLAIN, 16));
         gbc.gridy = 1;
-        gbc.gridwidth = 1; // Reset to one column
+        gbc.gridwidth = 1;
         formPanel.add(usernameLabel, gbc);
 
         // Username Text Field
@@ -92,11 +95,11 @@ public class Login extends JFrame {
         gbc.gridy = 5;
         formPanel.add(roleLabel, gbc);
 
-        // Role Text Field
-        RoundedTextField roleField = new RoundedTextField(20);
-        roleField.setPreferredSize(new Dimension(300, 40));
+        // Role ComboBox
+        String[] roles = {"Admin", "Lecturer",};
+        JComboBox<String> roleComboBox = new JComboBox<>(roles);
         gbc.gridy = 6;
-        formPanel.add(roleField, gbc);
+        formPanel.add(roleComboBox, gbc);
 
         // Login Button with Authentication Logic
         RoundedButton loginButton = new RoundedButton("Login");
@@ -104,21 +107,19 @@ public class Login extends JFrame {
         loginButton.addActionListener(e -> {
             String name = usernameField.getText().trim();
             String password_hash = new String(passwordField.getPassword());
-            String role = roleField.getText();
+            String role = (String) roleComboBox.getSelectedItem();
 
             // Check if the credentials are valid
             if (!Db_connect.authenticate(name, password_hash, role)) {
-                // Show error message if authentication fails
                 EMLabel.setText("Invalid username, password, or role.");
                 EMLabel.setVisible(true); // Show error message
             } else {
-                // If authentication is successful
                 EMLabel.setText("Login Successful");
                 EMLabel.setVisible(true);
 
                 // Transition to the main application
                 SwingUtilities.invokeLater(() -> {
-                    app.showMainApp(); // Use app reference to show main application
+                    app.showMainApp(role, name); // Pass role and username
                     dispose(); // Close the login frame
                 });
             }
@@ -147,7 +148,7 @@ public class Login extends JFrame {
         });
 
         // Add forgot password label to formPanel
-        gbc.gridy = 8; // Positioning for forgot password label
+        gbc.gridy = 8;
         gbc.gridwidth = 2; // Span two columns
         gbc.anchor = GridBagConstraints.CENTER; // Center align
         formPanel.add(fPassLabel, gbc);
