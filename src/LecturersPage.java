@@ -5,11 +5,11 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.sql.*;
 import DatabaseManager.Db_connect;
+import Round.RoundedButton;
 
 public class LecturersPage extends JPanel {
     private JTable lecturerTable; // Table to display lecturers
     private DefaultTableModel tableModel;
-    private JButton insertButton, updateButton, deleteButton; // Buttons for managing lecturers
 
     public LecturersPage() {
         setLayout(new BorderLayout()); // Set layout manager
@@ -38,9 +38,9 @@ public class LecturersPage extends JPanel {
 
         // Buttons Panel
         JPanel buttonPanel = new JPanel(); // Create panel for buttons
-        insertButton = new JButton("Add Lecturer"); // Button to add a lecturer
-        updateButton = new JButton("Edit Lecturer"); // Button to edit selected lecturer
-        deleteButton = new JButton("Remove Lecturer"); // Button to delete selected lecturer
+        RoundedButton insertButton = new RoundedButton("Add Lecturer"); // Button to add a lecturer
+        RoundedButton updateButton = new RoundedButton("Edit Lecturer"); // Button to edit selected lecturer
+        RoundedButton deleteButton = new RoundedButton("Remove Lecturer"); // Button to delete selected lecturer
 
         // Add buttons to the button panel
         buttonPanel.add(insertButton);

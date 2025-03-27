@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.sql.*;
 import DatabaseManager.Db_connect;
+import Round.RoundedButton;
 
 public class CoursePage extends JPanel {
     private JTable courseTable;
@@ -36,9 +37,9 @@ public class CoursePage extends JPanel {
 
         // Buttons
         JPanel buttonPanel = new JPanel();
-        insertButton = new JButton("Add Course");
-        updateButton = new JButton("Edit Course");
-        deleteButton = new JButton("Remove Course");
+        RoundedButton insertButton = new RoundedButton("Add Course");
+        RoundedButton updateButton = new RoundedButton("Edit Course");
+        RoundedButton deleteButton = new RoundedButton("Remove Course");
 
         buttonPanel.add(insertButton);
         buttonPanel.add(updateButton);
