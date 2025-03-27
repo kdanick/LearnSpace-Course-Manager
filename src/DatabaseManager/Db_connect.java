@@ -12,10 +12,6 @@ public class Db_connect {
     private static final String USER = "postgres";
     private static final String PASSWORD = "password";
 
-
-    private Db_connect() {
-    }
-
     public static Connection getConnection() {
         try {
             return DriverManager.getConnection(URL, USER, PASSWORD);
