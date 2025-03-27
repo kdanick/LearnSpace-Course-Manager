@@ -4,7 +4,7 @@ import java.sql.*;
 import DatabaseManager.Db_connect;
 
 public class ProfilePage extends JPanel {
-    public ProfilePage(Integer user_id) {
+    public ProfilePage(String userEmail) {
         setBackground(Color.WHITE);
         setLayout(new BorderLayout());
 
@@ -15,7 +15,7 @@ public class ProfilePage extends JPanel {
         profilePanel.setBackground(Color.WHITE);
 
         // Fetch User Data
-        String[] userData = getUserData(user_id);
+        String[] userData = getUserData(userEmail);
 
         // Profile Picture Panel
         JPanel imagePanel = new JPanel();
