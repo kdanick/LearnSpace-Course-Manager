@@ -9,7 +9,7 @@ import java.sql.ResultSet;
 public class Db_connect {
     private static final String URL = "jdbc:postgresql://localhost:5432/Learnspace";
     private static final String USER = "postgres";
-    private static final String PASSWORD = "Shogunka96";
+    private static final String PASSWORD = "passcode";
 
     private Db_connect() {
     }
