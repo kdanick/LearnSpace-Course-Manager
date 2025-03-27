@@ -89,7 +89,7 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library" exported="">
+    <orderEntry type="module-library">
       <library>
         <CLASSES>
           <root url="jar://$USER_HOME$/Downloads/jfreechart-1.0.19/jfreechart-1.0.19/lib/jfreechart-1.0.19-experimental.jar!/" />
@@ -122,12 +122,11 @@
         <CLASSES />
         <JAVADOC />
         <SOURCES>
-          <root url="file://$USER_HOME$/Downloads/jfreechart-1.0.19/jfreechart-1.0.19/experimental" />
-          <root url="file://$USER_HOME$/Downloads/jfreechart-1.0.19/jfreechart-1.0.19/source" />
-          <root url="file://$USER_HOME$/Downloads/jfreechart-1.0.19/jfreechart-1.0.19/swt" />
-          <root url="file://$USER_HOME$/Downloads/jfreechart-1.0.19/jfreechart-1.0.19/tests" />
+          <root url="file://$USER_HOME$/Downloads/jfreechart-1.5.2/jfreechart-1.5.2/src/main/java" />
+          <root url="file://$USER_HOME$/Downloads/jfreechart-1.5.2/jfreechart-1.5.2/src/test/java" />
         </SOURCES>
       </library>
     </orderEntry>
+    <orderEntry type="library" name="libs" level="project" />
   </component>
 </module>
