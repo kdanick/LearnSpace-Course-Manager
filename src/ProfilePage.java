@@ -4,36 +4,20 @@ import java.sql.*;
 import DatabaseManager.Db_connect;
 
 public class ProfilePage extends JPanel {
-    public ProfilePage(String userEmail) {
+    public ProfilePage(Integer user_id) {
         setBackground(Color.WHITE);
         setLayout(new BorderLayout());
 
         // Main Profile Panel
-        JPanel profilePanel = new JPanel();
-        profilePanel.setLayout(new BorderLayout());
+        JPanel profilePanel = new JPanel(new BorderLayout());
         profilePanel.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
         profilePanel.setBackground(Color.WHITE);
 
         // Fetch User Data
-        String[] userData = getUserData(userEmail);
-
-        // Profile Picture Panel
-        JPanel imagePanel = new JPanel();
-        imagePanel.setLayout(new FlowLayout(FlowLayout.CENTER));
-        imagePanel.setBackground(Color.WHITE);
-
-        // Load Profile Picture
-        ImageIcon profileImage = new ImageIcon(userData[4]); // Fetch image path from DB
-        Image img = profileImage.getImage().getScaledInstance(140, 140, Image.SCALE_SMOOTH); // Increased size
-        JLabel profilePic = new JLabel(new ImageIcon(img));
-        profilePic.setBorder(BorderFactory.createLineBorder(Color.GRAY, 2));
-        profilePic.setPreferredSize(new Dimension(140, 140));
-
-        imagePanel.add(profilePic);
+        String[] userData = getUserData(user_id);
 
         // Profile Info Panel
-        JPanel infoPanel = new JPanel();
-        infoPanel.setLayout(new GridLayout(4, 2, 10, 10)); // Removed bio, so now 4 rows instead of 5
+        JPanel infoPanel = new JPanel(new GridLayout(5, 2, 10, 10));
         infoPanel.setBackground(Color.WHITE);
         infoPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
@@ -49,23 +33,28 @@ public class ProfilePage extends JPanel {
         phoneLabel.setFont(new Font("Arial", Font.BOLD, 16));
         JLabel phoneValue = new JLabel(userData[2]);
 
+        JLabel genderLabel = new JLabel("Gender:");
+        genderLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        JLabel genderValue = new JLabel(userData[3]);
+
         JLabel roleLabel = new JLabel("Role:");
         roleLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        JLabel roleValue = new JLabel(userData[3]);
+        JLabel roleValue = new JLabel(userData[4]);
 
-        // Adding elements to info panel
+        // Add fields to info panel
         infoPanel.add(nameLabel);
         infoPanel.add(nameValue);
         infoPanel.add(emailLabel);
         infoPanel.add(emailValue);
         infoPanel.add(phoneLabel);
         infoPanel.add(phoneValue);
+        infoPanel.add(genderLabel);
+        infoPanel.add(genderValue);
         infoPanel.add(roleLabel);
         infoPanel.add(roleValue);
 
         // Button Panel
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         buttonPanel.setBackground(Color.WHITE);
 
         JButton editButton = new JButton("Edit Profile");
@@ -76,31 +65,30 @@ public class ProfilePage extends JPanel {
 
         buttonPanel.add(editButton);
 
-        // Profile Page
-        profilePanel.add(imagePanel, BorderLayout.NORTH);
+        // Assemble Profile Page
         profilePanel.add(infoPanel, BorderLayout.CENTER);
         profilePanel.add(buttonPanel, BorderLayout.SOUTH);
 
         add(profilePanel, BorderLayout.CENTER);
     }
 
-    // Fetch User Data using Db_connect
-    private String[] getUserData(String email) {
-        String[] data = {"Unknown", "Unknown", "Unknown", "Unknown", "default-profile.png"}; // Default values
+    // Fetch User Data from Database
+    private String[] getUserData(Integer user_id) {
+        String[] data = {"Unknown", "Unknown", "Unknown", "Unknown", "Unknown"}; // Default values
 
         try (Connection conn = Db_connect.getConnection()) {
             if (conn != null) {
-                String query = "SELECT name, email, phone_no, role FROM users WHERE email = ?";
+                String query = "SELECT name, email, phone_no, gender, role FROM Users WHERE user_id = ?";
                 PreparedStatement stmt = conn.prepareStatement(query);
-                stmt.setString(1, email);
+                stmt.setInt(1, user_id);
                 ResultSet rs = stmt.executeQuery();
 
                 if (rs.next()) {
                     data[0] = rs.getString("name");
                     data[1] = rs.getString("email");
                     data[2] = rs.getString("phone_no");
-                    data[3] = rs.getString("role");
-                    data[4] = rs.getString("profile_picture") != null ? rs.getString("profile_picture") : "default-profile.png";
+                    data[3] = rs.getString("gender");
+                    data[4] = rs.getString("role");
                 }
             }
         } catch (SQLException e) {
