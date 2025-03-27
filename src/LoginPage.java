@@ -15,7 +15,7 @@ public class LoginPage extends JPanel {
         loginButton.addActionListener(e -> {
             // Simulate login
             System.out.println("User logged in...");
-            app.showMainApp("Admin", "Default"); // Switch to main app
+            app.showMainApp(1,"Admin", "Default"); // Switch to main app
         });
 
         gbc.gridx = 0; gbc.gridy = 0; add(title, gbc);
