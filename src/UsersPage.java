@@ -12,17 +12,17 @@ public class UsersPage extends JPanel {
     private JTable table; // Make table accessible for refreshing
 
     public UsersPage() {
-        setBackground(Color.WHITE); // White background
+        setBackground(Color.WHITE);
         setLayout(new BorderLayout());
 
         // Top Panel with Greetings
         JPanel topPanel = new JPanel();
         topPanel.setLayout(new GridLayout(2, 1));
-        topPanel.setBackground(Color.WHITE); // White background
+        topPanel.setBackground(Color.WHITE);
 
         JLabel greetingLabel = new JLabel("User Management", SwingConstants.CENTER);
         greetingLabel.setFont(new Font("Arial", Font.BOLD, 28));
-        greetingLabel.setForeground(Color.BLACK); // Black text
+        greetingLabel.setForeground(Color.BLACK);
 
         topPanel.add(greetingLabel);
         add(topPanel, BorderLayout.NORTH);
@@ -31,7 +31,7 @@ public class UsersPage extends JPanel {
         List<User> users = getAllUsers();
 
         // Prepare table data
-        String[] columnNames = {"User ID", "Username", "Email", "Password", "Role", "Phone Number"};
+        String[] columnNames = {"User ID", "Username", "Email", "Password", "Role", "Phone Number", "Gender"};
         Object[][] userData = new Object[users.size()][columnNames.length];
 
         for (int i = 0; i < users.size(); i++) {
@@ -42,6 +42,7 @@ public class UsersPage extends JPanel {
             userData[i][3] = user.getPassword();
             userData[i][4] = user.getRole();
             userData[i][5] = user.getPhoneNumber();
+            userData[i][6] = user.getGender();
         }
 
         table = new JTable(new DefaultTableModel(userData, columnNames));
@@ -72,9 +73,10 @@ public class UsersPage extends JPanel {
                 String password = (String) table.getValueAt(selectedRow, 3);
                 String role = (String) table.getValueAt(selectedRow, 4);
                 String phoneNumber = (String) table.getValueAt(selectedRow, 5);
+                String gender = (String) table.getValueAt(selectedRow, 6);
 
                 // Open dialog to edit the selected user
-                openUserDialog(new User(userId, username, email, password, role, phoneNumber));
+                openUserDialog(new User(userId, username, email, password, role, phoneNumber, gender));
             } else {
                 JOptionPane.showMessageDialog(this, "Please select a user to edit.");
             }
@@ -105,7 +107,7 @@ public class UsersPage extends JPanel {
         dialog.setTitle(user == null ? "Add User" : "Edit User");
         dialog.setSize(400, 300);
         dialog.setLocationRelativeTo(this);
-        dialog.setLayout(new GridLayout(7, 2));
+        dialog.setLayout(new GridLayout(8, 2));
 
         JTextField user_idField = new JTextField(user != null ? user.getUser_id() : "");
         JTextField usernameField = new JTextField(user != null ? user.getUsername() : "");
@@ -113,6 +115,7 @@ public class UsersPage extends JPanel {
         JTextField passwordField = new JTextField(user != null ? user.getPassword() : "");
         JTextField roleField = new JTextField(user != null ? user.getRole() : "");
         JTextField phoneField = new JTextField(user != null ? user.getPhoneNumber() : "");
+        JTextField genderField = new JTextField(user != null ? user.getGender() : "");
 
         dialog.add(new JLabel("User ID:"));
         dialog.add(user_idField);
@@ -126,13 +129,15 @@ public class UsersPage extends JPanel {
         dialog.add(roleField);
         dialog.add(new JLabel("Phone Number:"));
         dialog.add(phoneField);
+        dialog.add(new JLabel("Gender:"));
+        dialog.add(genderField);
 
         JButton saveButton = new JButton(user == null ? "Add" : "Save");
         saveButton.addActionListener(e -> {
             if (user == null) {
-                addUser(user_idField.getText(), usernameField.getText(), emailField.getText(), passwordField.getText(), roleField.getText(), phoneField.getText());
+                addUser(user_idField.getText(), usernameField.getText(), emailField.getText(), passwordField.getText(), roleField.getText(), phoneField.getText(), genderField.getText());
             } else {
-                updateUser(user.getUser_id(), usernameField.getText(), emailField.getText(), passwordField.getText(), roleField.getText(), phoneField.getText());
+                updateUser(user.getUser_id(), usernameField.getText(), emailField.getText(), passwordField.getText(), roleField.getText(), phoneField.getText(), genderField.getText());
             }
             dialog.dispose(); // Close the dialog
             refreshTable(); // Refresh the table after adding/editing
@@ -142,11 +147,11 @@ public class UsersPage extends JPanel {
         dialog.setVisible(true);
     }
 
-    private void addUser(String user_id, String name, String email, String password_hash, String role, String phone_no) {
-        String sql = "INSERT INTO users (user_id, name, email, password_hash, role, phone_no) VALUES (?, ?, ?, ?, ?, ?)";
+    private void addUser(String user_id, String name, String email, String password_hash, String role, String phone_no, String gender) {
+        String sql = "INSERT INTO users (user_id, name, email, password_hash, role, phone_no, gender) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         // Input validation
-        if (name.isEmpty() || email.isEmpty() || password_hash.isEmpty() || role.isEmpty() || phone_no.isEmpty()) {
+        if (name.isEmpty() || email.isEmpty() || password_hash.isEmpty() || role.isEmpty() || phone_no.isEmpty() || gender.isEmpty()) {
             JOptionPane.showMessageDialog(this, "All fields are required.");
             return;
         }
@@ -159,6 +164,7 @@ public class UsersPage extends JPanel {
             pstmt.setString(4, password_hash);
             pstmt.setString(5, role);
             pstmt.setString(6, phone_no);
+            pstmt.setString(7, gender);
             pstmt.executeUpdate();
             JOptionPane.showMessageDialog(this, "User added successfully.");
         } catch (SQLException e) {
@@ -167,8 +173,8 @@ public class UsersPage extends JPanel {
         }
     }
 
-    private void updateUser(String userId, String username, String email, String password, String role, String phoneNumber) {
-        String sql = "UPDATE users SET name = ?, email = ?, password_hash = ?, role = ?, phone_no = ? WHERE user_id = ?";
+    private void updateUser(String userId, String username, String email, String password, String role, String phoneNumber, String gender) {
+        String sql = "UPDATE users SET name = ?, email = ?, password_hash = ?, role = ?, phone_no = ?, gender = ? WHERE user_id = ?";
 
         try (Connection conn = Db_connect.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -177,7 +183,8 @@ public class UsersPage extends JPanel {
             pstmt.setString(3, password);
             pstmt.setString(4, role);
             pstmt.setString(5, phoneNumber);
-            pstmt.setString(6, userId);
+            pstmt.setString(6, gender);
+            pstmt.setString(7, userId);
             pstmt.executeUpdate();
             JOptionPane.showMessageDialog(this, "User updated successfully.");
         } catch (SQLException e) {
@@ -212,14 +219,15 @@ public class UsersPage extends JPanel {
                     user.getEmail(),
                     user.getPassword(),
                     user.getRole(),
-                    user.getPhoneNumber()
+                    user.getPhoneNumber(),
+                    user.getGender()
             });
         }
     }
 
     private List<User> getAllUsers() {
         List<User> users = new ArrayList<>();
-        String sql = "SELECT user_id, name, email, password_hash, role, phone_no FROM users";
+        String sql = "SELECT user_id, name, email, password_hash, role, phone_no, gender FROM users";
 
         try (Connection conn = Db_connect.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -231,7 +239,8 @@ public class UsersPage extends JPanel {
                 String password_hash = rs.getString("password_hash"); // Corrected column name
                 String role = rs.getString("role");
                 String phone_no = rs.getString("phone_no"); // Corrected column name
-                users.add(new User(user_id, name, email, password_hash, role, phone_no));
+                String gender = rs.getString("gender");
+                users.add(new User(user_id, name, email, password_hash, role, phone_no, gender));
             }
             System.out.println("Fetched users: " + users.size()); // Debugging line
         } catch (SQLException e) {
@@ -248,14 +257,16 @@ public class UsersPage extends JPanel {
         private String password_hash;
         private String role;
         private String phone_no;
+        private String gender;
 
-        public User(String user_id, String name, String email, String password_hash, String role, String phone_no) {
+        public User(String user_id, String name, String email, String password_hash, String role, String phone_no, String gender) {
             this.user_id = user_id;
             this.name = name;
             this.email = email;
             this.password_hash = password_hash;
             this.role = role;
             this.phone_no = phone_no;
+            this.gender = gender; // Initialize new field
         }
 
         // Getters
@@ -265,5 +276,6 @@ public class UsersPage extends JPanel {
         public String getPassword() { return password_hash; }
         public String getRole() { return role; }
         public String getPhoneNumber() { return phone_no; }
+        public String getGender() { return gender; }
     }
 }

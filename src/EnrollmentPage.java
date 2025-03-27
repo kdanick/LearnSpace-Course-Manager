@@ -12,7 +12,7 @@ public class EnrollmentPage extends JPanel {
     private JTable table; // Make table accessible for refreshing
 
     public EnrollmentPage() {
-        setBackground(Color.WHITE); // White background
+        setBackground(Color.WHITE);
         setLayout(new BorderLayout());
 
         // Top Panel with Title

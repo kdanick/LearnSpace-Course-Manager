@@ -8,7 +8,7 @@ import DatabaseManager.Db_connect;
 import analytics.*;
 
 public class AdminDashboard extends JPanel {
-    public AdminDashboard() {
+    public AdminDashboard(Integer user_id) {
         setLayout(new BorderLayout());
         setBackground(Color.LIGHT_GRAY);
 

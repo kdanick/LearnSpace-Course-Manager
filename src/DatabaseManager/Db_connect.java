@@ -7,9 +7,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 public class Db_connect {
+
     private static final String URL = "jdbc:postgresql://localhost:5432/learnspace";
     private static final String USER = "postgres";
     private static final String PASSWORD = "password";
+
 
     private Db_connect() {
     }
@@ -42,9 +44,9 @@ public class Db_connect {
         }
     }
 
-    public static boolean authenticate(String name, String password_hash, String role) {
+    public static Integer authenticate(String name, String password_hash, String role) {
         // SQL query to select the password for the given username and role
-        String sql = "SELECT password_hash FROM users WHERE name = ? AND role = ?";
+        String sql = "SELECT user_id, password_hash FROM users WHERE name = ? AND role = ?";
 
         // Use try-with-resources to ensure resources are closed automatically
         try (Connection conn = getConnection(); // Establish a connection
@@ -60,13 +62,16 @@ public class Db_connect {
             if (rs.next()) {
                 // Retrieve the stored password from the result set
                 String storedPassword = rs.getString("password_hash");
-                // Compare the stored password with the provided password
-                return storedPassword.equals(password_hash); // Replace with password hashing if needed
+                Integer user_id = rs.getInt("user_Id");
+
+                if (storedPassword.equals(password_hash)){
+                    return user_id;
+                }
             }
         } catch (Exception e) {
             // Print the stack trace if an error occurs
             e.printStackTrace();
         }
-        return false; // Return false if authentication fails
+        return null;
     }
 }

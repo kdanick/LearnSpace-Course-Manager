@@ -22,8 +22,8 @@ public class App {
         frame.setVisible(true); // Show the login frame
     }
 
-    public void showMainApp(String role, String username) {
-        frame.setContentPane(new MainApp(role, username)); // Switch to main app
+    public void showMainApp(Integer user_id, String role, String username) {
+        frame.setContentPane(new MainApp(user_id, role, username)); // Switch to main app
         frame.setVisible(true); // Show the main application frame
     }
 
