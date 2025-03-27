@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.sql.*;
+import DatabaseManager.Db_connect;
 
 public class ProfilePage extends JPanel {
     public ProfilePage(String userEmail) {
@@ -75,7 +76,7 @@ public class ProfilePage extends JPanel {
 
         buttonPanel.add(editButton);
 
-        //  Profile Page
+        // Profile Page
         profilePanel.add(imagePanel, BorderLayout.NORTH);
         profilePanel.add(infoPanel, BorderLayout.CENTER);
         profilePanel.add(buttonPanel, BorderLayout.SOUTH);
@@ -83,26 +84,24 @@ public class ProfilePage extends JPanel {
         add(profilePanel, BorderLayout.CENTER);
     }
 
-    //  Fetch User Data
+    // Fetch User Data using Db_connect
     private String[] getUserData(String email) {
-        String url = "jdbc:postgresql://localhost:5432/learnspaceDB";
-        String user = "postgres";
-        String password = "password";
+        String[] data = {"Unknown", "Unknown", "Unknown", "Unknown", "default-profile.png"}; // Default values
 
-        String[] data = {"Unknown", "Unknown", "Unknown", "Unknown", "default-profile.png"}; // Removed bio
+        try (Connection conn = Db_connect.getConnection()) {
+            if (conn != null) {
+                String query = "SELECT name, email, phone_no, role FROM users WHERE email = ?";
+                PreparedStatement stmt = conn.prepareStatement(query);
+                stmt.setString(1, email);
+                ResultSet rs = stmt.executeQuery();
 
-        try (Connection conn = DriverManager.getConnection(url, user, password)) {
-            String query = "SELECT name, email, phone_no, role FROM users WHERE email = ?";
-            PreparedStatement stmt = conn.prepareStatement(query);
-            stmt.setString(1, email);
-            ResultSet rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                data[0] = rs.getString("name");
-                data[1] = rs.getString("email");
-                data[2] = rs.getString("phone");
-                data[3] = rs.getString("role");
-                data[4] = rs.getString("profile_picture") != null ? rs.getString("profile_picture") : "default-profile.png";
+                if (rs.next()) {
+                    data[0] = rs.getString("name");
+                    data[1] = rs.getString("email");
+                    data[2] = rs.getString("phone_no");
+                    data[3] = rs.getString("role");
+                    data[4] = rs.getString("profile_picture") != null ? rs.getString("profile_picture") : "default-profile.png";
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();

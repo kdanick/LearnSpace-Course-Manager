@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -13,11 +14,24 @@ public class LecturersPage extends JPanel {
     public LecturersPage() {
         setLayout(new BorderLayout());
 
+        // Top Panel with Title
+        JPanel topPanel = new JPanel(new BorderLayout());
+
+        JLabel titleLabel = new JLabel("Lecturers", SwingConstants.CENTER);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 32));
+        titleLabel.setForeground(Color.BLACK);
+        titleLabel.setBorder(new EmptyBorder(20, 0, 20, 0));
+        topPanel.add(titleLabel, BorderLayout.NORTH);
+        add(topPanel, BorderLayout.NORTH);
+
         // Table Model
         tableModel = new DefaultTableModel();
         lecturerTable = new JTable(tableModel);
+        lecturerTable.setFont(new Font("Arial", Font.PLAIN, 14));
+        lecturerTable.setRowHeight(25);
         JScrollPane scrollPane = new JScrollPane(lecturerTable);
         add(scrollPane, BorderLayout.CENTER);
+
 
         // Load Lecturers
         loadLecturers();
@@ -45,7 +59,7 @@ public class LecturersPage extends JPanel {
     private void loadLecturers() {
         try (Connection connection = Db_connect.getConnection();
              Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT user_id, name, email, phone_no FROM Users WHERE role='Lecturer'")) {
+             ResultSet resultSet = statement.executeQuery("SELECT user_id, name, email, phone_no, gender FROM Users WHERE role='lecturer'")) {
 
             // Get column names
             ResultSetMetaData metaData = resultSet.getMetaData();
@@ -81,12 +95,14 @@ public class LecturersPage extends JPanel {
         JTextField nameField = new JTextField();
         JTextField emailField = new JTextField();
         JTextField phoneField = new JTextField();
+        JTextField genderField = new JTextField();
 
         Object[] message = {
-                "ID:", idField,   // ID field added
+                "ID:", idField,
                 "Name:", nameField,
                 "Email:", emailField,
-                "Phone No:", phoneField
+                "Phone No:", phoneField,
+                "gender: ", genderField
         };
 
         int option = JOptionPane.showConfirmDialog(this, message, "Enter Lecturer Details", JOptionPane.OK_CANCEL_OPTION);
@@ -96,9 +112,10 @@ public class LecturersPage extends JPanel {
             String name = nameField.getText().trim();
             String email = emailField.getText().trim();
             String phoneNo = phoneField.getText().trim();
+            String gender = genderField.getText().trim();
             String password = "123456"; // Default password
 
-            if (idText.isEmpty() || name.isEmpty() || email.isEmpty() || phoneNo.isEmpty()) {
+            if (idText.isEmpty() || name.isEmpty() || email.isEmpty() || phoneNo.isEmpty() || gender.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "All fields must be filled!", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
@@ -108,13 +125,14 @@ public class LecturersPage extends JPanel {
 
                 try (Connection connection = Db_connect.getConnection();
                      PreparedStatement statement = connection.prepareStatement(
-                             "INSERT INTO Users (user_id, name, email, password_hash, phone_no, role) VALUES (?, ?, ?, ?, ?, 'Lecturer')")) {
+                             "INSERT INTO Users (user_id, name, email, password_hash, phone_no, gender, role) VALUES (?, ?, ?, ?, ?, ?, 'lecturer')")) {
 
                     statement.setInt(1, id);
                     statement.setString(2, name);
                     statement.setString(3, email);
                     statement.setString(4, password);
                     statement.setString(5, phoneNo);
+                    statement.setString(6, gender);
 
                     statement.executeUpdate();
                     JOptionPane.showMessageDialog(this, "Lecturer added successfully.");
@@ -128,7 +146,6 @@ public class LecturersPage extends JPanel {
             }
         }
     }
-
 
     /**
      * Update an existing lecturer's details.
@@ -144,15 +161,18 @@ public class LecturersPage extends JPanel {
         String currentName = (String) tableModel.getValueAt(selectedRow, 1);
         String currentEmail = (String) tableModel.getValueAt(selectedRow, 2);
         String currentPhone = (String) tableModel.getValueAt(selectedRow, 3);
+        String currentGender = (String) tableModel.getValueAt(selectedRow, 4);
 
         JTextField nameField = new JTextField(currentName);
         JTextField emailField = new JTextField(currentEmail);
         JTextField phoneField = new JTextField(currentPhone);
+        JTextField genderField = new JTextField(currentGender);
 
         Object[] message = {
                 "Name:", nameField,
                 "Email:", emailField,
-                "Phone No:", phoneField
+                "Phone No:", phoneField,
+                "Gender: ", genderField
         };
 
         int option = JOptionPane.showConfirmDialog(this, message, "Update Lecturer Details", JOptionPane.OK_CANCEL_OPTION);
@@ -161,20 +181,22 @@ public class LecturersPage extends JPanel {
             String newName = nameField.getText().trim();
             String newEmail = emailField.getText().trim();
             String newPhone = phoneField.getText().trim();
+            String newGender = genderField.getText().trim();
 
-            if (newName.isEmpty() || newEmail.isEmpty() || newPhone.isEmpty()) {
+            if (newName.isEmpty() || newEmail.isEmpty() || newPhone.isEmpty() || newGender.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "All fields must be filled!", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
             try (Connection connection = Db_connect.getConnection();
                  PreparedStatement statement = connection.prepareStatement(
-                         "UPDATE Users SET name=?, email=?, phone_no=? WHERE user_id=? AND role='Lecturer'")) {
+                         "UPDATE Users SET name=?, email=?, phone_no=?, gender=? WHERE user_id=? AND role='lecturer'")) {
 
                 statement.setString(1, newName);
                 statement.setString(2, newEmail);
                 statement.setString(3, newPhone);
-                statement.setInt(4, userId);
+                statement.setString(4,newGender);
+                statement.setInt(5, userId);
                 statement.executeUpdate();
                 JOptionPane.showMessageDialog(this, "Lecturer updated successfully.");
                 loadLecturers();
@@ -205,7 +227,7 @@ public class LecturersPage extends JPanel {
 
         if (confirm == JOptionPane.YES_OPTION) {
             try (Connection connection = Db_connect.getConnection();
-                 PreparedStatement statement = connection.prepareStatement("DELETE FROM Users WHERE user_id=? AND role='Lecturer'")) {
+                 PreparedStatement statement = connection.prepareStatement("DELETE FROM Users WHERE user_id=? AND role='lecturer'")) {
 
                 statement.setInt(1, userId);
                 statement.executeUpdate();
