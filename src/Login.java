@@ -96,7 +96,7 @@ public class Login extends JFrame {
         formPanel.add(roleLabel, gbc);
 
         // Role ComboBox
-        String[] roles = {"admin", "lecturer",};
+        String[] roles = {"Admin", "Lecturer",};
         JComboBox<String> roleComboBox = new JComboBox<>(roles);
         gbc.gridy = 6;
         formPanel.add(roleComboBox, gbc);
