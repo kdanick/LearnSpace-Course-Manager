@@ -10,8 +10,9 @@ public class App {
         frame.setIconImage(logo);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1200, 700);
+        frame.setMinimumSize(new Dimension(1200, 700));
         frame.setLocationRelativeTo(null);
-        frame.setResizable(false);
+        frame.setResizable(true);
 
         showLogin(); // Show the login page first
     }
