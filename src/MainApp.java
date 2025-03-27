@@ -20,7 +20,6 @@ public class MainApp extends JPanel {
 
     private void initializeContentPanels() {
         contentPanel.add(new HomePage(), "Home");
-        contentPanel.add(new SettingsPage(), "Settings");
         contentPanel.add(new ProfilePage("example@email.com"), "Profile");
         contentPanel.add(new StudentsPage(), "Students");
         contentPanel.add(new CoursePage(), "Courses");
