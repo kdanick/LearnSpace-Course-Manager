@@ -10,7 +10,6 @@ import Round.RoundedButton;
 public class CoursePage extends JPanel {
     private JTable courseTable;
     private DefaultTableModel tableModel;
-    private JButton insertButton, updateButton, deleteButton;
 
     public CoursePage() {
         setLayout(new BorderLayout());
