@@ -4,12 +4,12 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.sql.*;
 import DatabaseManager.Db_connect;
+import Round.RoundedButton;
 
 public class StudentsPage extends JPanel {
     private JTable studentTable;
     private DefaultTableModel tableModel;
     private JButton insertButton, updateButton, deleteButton;
-    private JTextField nameField, emailField, gradesField;
 
     public StudentsPage() {
         setLayout(new BorderLayout());
@@ -23,30 +23,20 @@ public class StudentsPage extends JPanel {
         // Load Students
         loadStudents();
 
-        // Form Panel
-        JPanel formPanel = new JPanel(new GridLayout(2, 4));
-        nameField = new JTextField();
-        emailField = new JTextField();
-        gradesField = new JTextField();
-        insertButton = new JButton("Insert");
-        updateButton = new JButton("Update");
-        deleteButton = new JButton("Delete");
+        // Button Panel
+        JPanel buttonPanel = new JPanel(new FlowLayout());
+        RoundedButton insertButton = new RoundedButton("Insert");
+        RoundedButton updateButton = new RoundedButton("Update");
+        RoundedButton deleteButton = new RoundedButton("Delete");
 
-        formPanel.add(new JLabel("Name:"));
-        formPanel.add(nameField);
-        formPanel.add(new JLabel("Email:"));
-        formPanel.add(emailField);
-        formPanel.add(new JLabel("Grades:"));
-        formPanel.add(gradesField);
-        formPanel.add(insertButton);
-        formPanel.add(updateButton);
-        formPanel.add(deleteButton);
-
-        add(formPanel, BorderLayout.SOUTH);
+        buttonPanel.add(insertButton);
+        buttonPanel.add(updateButton);
+        buttonPanel.add(deleteButton);
+        add(buttonPanel, BorderLayout.SOUTH);
 
         // Button Actions
-        insertButton.addActionListener(this::insertStudent);
-        updateButton.addActionListener(this::updateStudent);
+        insertButton.addActionListener(this::showInsertDialog);
+        updateButton.addActionListener(this::showUpdateDialog);
         deleteButton.addActionListener(this::deleteStudent);
     }
 
@@ -77,52 +67,101 @@ public class StudentsPage extends JPanel {
         }
     }
 
-    private void insertStudent(ActionEvent e) {
-        String name = nameField.getText();
-        String email = emailField.getText();
-        String grades = gradesField.getText();
-
-        try (Connection connection = Db_connect.getConnection();
-             PreparedStatement statement = connection.prepareStatement(
-                     "INSERT INTO students (name, email, grades) VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
-
-            statement.setString(1, name);
-            statement.setString(2, email);
-            statement.setString(3, grades);
-            statement.executeUpdate();
-            JOptionPane.showMessageDialog(this, "Student added successfully.");
-            loadStudents();
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Error inserting student.");
-            ex.printStackTrace();
-        }
+    private void showInsertDialog(ActionEvent e) {
+        showStudentDialog(null);
     }
 
-    private void updateStudent(ActionEvent e) {
+    private void showUpdateDialog(ActionEvent e) {
         int selectedRow = studentTable.getSelectedRow();
         if (selectedRow == -1) {
             JOptionPane.showMessageDialog(this, "Select a student to update.");
             return;
         }
+        int studentId = (int) tableModel.getValueAt(selectedRow, 0); // Assuming student ID is in the first column
+        String name = (String) tableModel.getValueAt(selectedRow, 1);
+        String email = (String) tableModel.getValueAt(selectedRow, 2);
+        String course = (String) tableModel.getValueAt(selectedRow, 3);
 
-        int studentId = (int) tableModel.getValueAt(selectedRow, 0);
-        String name = nameField.getText();
-        String email = emailField.getText();
-        String grades = gradesField.getText();
+        showStudentDialog(new Student(studentId, name, email, course));
+    }
 
+    private void showStudentDialog(Student student) {
+        JDialog dialog = new JDialog();
+        dialog.setTitle(student == null ? "Insert Student" : "Update Student");
+        dialog.setSize(400, 300);
+        dialog.setLocationRelativeTo(this);
+        dialog.setLayout(new GridLayout(5, 2)); // Updated to 5 rows
+
+        JTextField idField = new JTextField(student != null ? String.valueOf(student.getId()) : "");
+        JTextField nameField = new JTextField(student != null ? student.getName() : "");
+        JTextField emailField = new JTextField(student != null ? student.getEmail() : "");
+        JTextField courseField = new JTextField(student != null ? student.getCourse() : "");
+
+        dialog.add(new JLabel("Student ID:"));
+        dialog.add(idField);
+        dialog.add(new JLabel("Name:"));
+        dialog.add(nameField);
+        dialog.add(new JLabel("Email:"));
+        dialog.add(emailField);
+        dialog.add(new JLabel("Course:"));
+        dialog.add(courseField);
+
+        JButton saveButton = new JButton(student == null ? "Insert" : "Update");
+        saveButton.addActionListener(e -> {
+            if (student == null) {
+                try {
+                    int studentId = Integer.parseInt(idField.getText().trim());
+                    insertStudent(studentId, nameField.getText(), emailField.getText(), courseField.getText());
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(dialog, "Invalid Student ID. Please enter a valid integer.");
+                }
+            } else {
+                updateStudent(student.getId(), nameField.getText(), emailField.getText(), courseField.getText());
+            }
+            dialog.dispose(); // Close the dialog
+        });
+
+        dialog.add(saveButton);
+        dialog.setVisible(true);
+    }
+
+    private void insertStudent(int studentId, String name, String email, String course) {
+        if (name.isEmpty() || email.isEmpty() || course.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "All fields must be filled.");
+            return;
+        }
+
+        String sql = "INSERT INTO students (student_id, name, email, course) VALUES (?, ?, ?, ?)";
         try (Connection connection = Db_connect.getConnection();
-             PreparedStatement statement = connection.prepareStatement(
-                     "UPDATE students SET name=?, email=?, grades=? WHERE student_id=?")) {
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setInt(1, studentId);
+            statement.setString(2, name);
+            statement.setString(3, email);
+            statement.setString(4, course);
+            statement.executeUpdate();
+            JOptionPane.showMessageDialog(this, "Student added successfully.");
+            loadStudents();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error inserting student: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+
+    private void updateStudent(int studentId, String name, String email, String course) {
+        String sql = "UPDATE students SET name=?, email=?, course=? WHERE student_id=?";
+        try (Connection connection = Db_connect.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setString(1, name);
             statement.setString(2, email);
-            statement.setString(3, grades);
+            statement.setString(3, course);
             statement.setInt(4, studentId);
             statement.executeUpdate();
             JOptionPane.showMessageDialog(this, "Student updated successfully.");
             loadStudents();
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Error updating student.");
+            JOptionPane.showMessageDialog(this, "Error updating student: " + ex.getMessage());
             ex.printStackTrace();
         }
     }
@@ -136,16 +175,37 @@ public class StudentsPage extends JPanel {
 
         int studentId = (int) tableModel.getValueAt(selectedRow, 0);
 
+        String sql = "DELETE FROM students WHERE student_id=?";
         try (Connection connection = Db_connect.getConnection();
-             PreparedStatement statement = connection.prepareStatement("DELETE FROM students WHERE student_id=?")) {
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, studentId);
             statement.executeUpdate();
             JOptionPane.showMessageDialog(this, "Student deleted successfully.");
             loadStudents();
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Error deleting student.");
+            JOptionPane.showMessageDialog(this, "Error deleting student: " + ex.getMessage());
             ex.printStackTrace();
         }
+    }
+
+    // Inner class to hold student data
+    private class Student {
+        private int id;
+        private String name;
+        private String email;
+        private String course;
+
+        public Student(int id, String name, String email, String course) {
+            this.id = id;
+            this.name = name;
+            this.email = email;
+            this.course = course;
+        }
+
+        public int getId() { return id; }
+        public String getName() { return name; }
+        public String getEmail() { return email; }
+        public String getCourse() { return course; }
     }
 }
