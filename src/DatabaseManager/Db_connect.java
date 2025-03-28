@@ -43,18 +43,17 @@ public class Db_connect {
     }
 
     public static Integer authenticate(String name, String password_hash, String role) {
-        // SQL query to select the password for the given username and role
         String sql = "SELECT user_id, password_hash FROM users WHERE name = ? AND role = ?";
 
         // Use try-with-resources to ensure resources are closed automatically
-        try (Connection conn = getConnection(); // Establish a connection
-             PreparedStatement pstmt = conn.prepareStatement(sql)) { // Prepare the SQL statement
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             // Set the username and role parameters in the SQL query
             pstmt.setString(1, name);
-            pstmt.setString(2, role); // Set the role parameter
+            pstmt.setString(2, role);
 
-            ResultSet rs = pstmt.executeQuery(); // Execute the query
+            ResultSet rs = pstmt.executeQuery();
 
             // Check if a result is returned
             if (rs.next()) {

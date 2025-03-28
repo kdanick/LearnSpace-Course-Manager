@@ -11,8 +11,8 @@ public class DatabaseGUI extends JFrame {
     private JTable resultTable;
     private DefaultTableModel tableModel;
     private JButton executeButton, deleteButton;
-    private String lastDisplayedTable; // Stores last viewed table for deletion
-    private int selectedRow = -1; // Stores selected row index
+    private String lastDisplayedTable;
+    private int selectedRow = -1;
 
     public DatabaseGUI() {
         setTitle("LearnSpace Database Manager");
@@ -26,7 +26,7 @@ public class DatabaseGUI extends JFrame {
         tableNameField = new JTextField(20);
         executeButton = new JButton("Execute");
         deleteButton = new JButton("Delete Selected Row");
-        deleteButton.setEnabled(false); // Initially disabled
+        deleteButton.setEnabled(false);
 
         // Top Panel: Action selection
         JPanel topPanel = new JPanel();
@@ -153,7 +153,7 @@ public class DatabaseGUI extends JFrame {
                 String columnName = columns.getString("COLUMN_NAME");
                 String columnType = columns.getString("TYPE_NAME");
                 String autoIncrement = columns.getString("IS_AUTOINCREMENT");
-                String defaultValue = columns.getString("COLUMN_DEF"); // Check if column has a default
+                String defaultValue = columns.getString("COLUMN_DEF");
 
                 // 🚀 Ignore auto-incremented columns and default timestamp columns
                 if ("YES".equalsIgnoreCase(autoIncrement) || defaultValue != null) {
@@ -162,7 +162,7 @@ public class DatabaseGUI extends JFrame {
 
                 // 🔄 Prompt user for input
                 String input = JOptionPane.showInputDialog(this, "Enter value for " + columnName + " (" + columnType + "):");
-                if (input == null) return; // User canceled input
+                if (input == null) return;
 
                 // Handle different data types
                 if (columnType.equalsIgnoreCase("int4") || columnType.equalsIgnoreCase("integer")) {

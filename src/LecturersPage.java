@@ -8,96 +8,90 @@ import DatabaseManager.Db_connect;
 import Round.RoundedButton;
 
 public class LecturersPage extends JPanel {
-    private JTable lecturerTable; // Table to display lecturers
+    private JTable lecturerTable;
     private DefaultTableModel tableModel;
 
     public LecturersPage() {
-        setLayout(new BorderLayout()); // Set layout manager
+        setLayout(new BorderLayout());
 
-        // Top Panel with Title
-        JPanel topPanel = new JPanel(new BorderLayout()); // Create a panel for the title
+        // Top Panel
+        JPanel topPanel = new JPanel(new BorderLayout());
 
-        // Create and configure the title label
         JLabel titleLabel = new JLabel("Lecturers", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 32)); // Set font style
-        titleLabel.setForeground(Color.BLACK); // Set text color
-        titleLabel.setBorder(new EmptyBorder(20, 0, 20, 0)); // Add padding
-        topPanel.add(titleLabel, BorderLayout.NORTH); // Add title label to the top panel
-        add(topPanel, BorderLayout.NORTH); // Add top panel to the main panel
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 32));
+        titleLabel.setForeground(Color.BLACK);
+        titleLabel.setBorder(new EmptyBorder(20, 0, 20, 0));
+        topPanel.add(titleLabel, BorderLayout.NORTH);
+        add(topPanel, BorderLayout.NORTH);
 
         // Table Model
-        tableModel = new DefaultTableModel(); // Initialize table model
-        lecturerTable = new JTable(tableModel); // Create table with the model
+        tableModel = new DefaultTableModel();
+        lecturerTable = new JTable(tableModel);
         lecturerTable.setFont(new Font("Arial", Font.PLAIN, 14)); // Set font for table
-        lecturerTable.setRowHeight(25); // Set row height for better readability
-        JScrollPane scrollPane = new JScrollPane(lecturerTable); // Add table to scroll pane
-        add(scrollPane, BorderLayout.CENTER); // Add scroll pane to the center of the main panel
+        lecturerTable.setRowHeight(25);
+        JScrollPane scrollPane = new JScrollPane(lecturerTable);
+        add(scrollPane, BorderLayout.CENTER);
 
-        // Load Lecturers from database
         loadLecturers();
 
         // Buttons Panel
-        JPanel buttonPanel = new JPanel(); // Create panel for buttons
-        RoundedButton insertButton = new RoundedButton("Add Lecturer"); // Button to add a lecturer
-        RoundedButton updateButton = new RoundedButton("Edit Lecturer"); // Button to edit selected lecturer
-        RoundedButton deleteButton = new RoundedButton("Remove Lecturer"); // Button to delete selected lecturer
+        JPanel buttonPanel = new JPanel();
+        RoundedButton insertButton = new RoundedButton("Add Lecturer");
+        RoundedButton updateButton = new RoundedButton("Edit Lecturer");
+        RoundedButton deleteButton = new RoundedButton("Remove Lecturer");
 
-        // Add buttons to the button panel
         buttonPanel.add(insertButton);
         buttonPanel.add(updateButton);
         buttonPanel.add(deleteButton);
-        add(buttonPanel, BorderLayout.SOUTH); // Add button panel to the bottom of the main panel
+        add(buttonPanel, BorderLayout.SOUTH);
 
         // Button Actions
-        insertButton.addActionListener(this::insertLecturer); // Action for inserting a lecturer
-        updateButton.addActionListener(this::updateLecturer); // Action for updating a lecturer
-        deleteButton.addActionListener(this::deleteLecturer); // Action for deleting a lecturer
+        insertButton.addActionListener(this::insertLecturer);
+        updateButton.addActionListener(this::updateLecturer);
+        deleteButton.addActionListener(this::deleteLecturer);
     }
 
-    // Method to load lecturers from the database and display them in the table
+    // Get lecturers in a table
     private void loadLecturers() {
-        try (Connection connection = Db_connect.getConnection(); // Establish database connection
-             Statement statement = connection.createStatement(); // Create statement for executing queries
+        try (Connection connection = Db_connect.getConnection();
+             Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery("SELECT user_id, name, email, phone_no, gender FROM Users WHERE role='lecturer'")) {
 
             // Get column names from the result set
             ResultSetMetaData metaData = resultSet.getMetaData();
             int columnCount = metaData.getColumnCount();
-            String[] columnNames = new String[columnCount]; // Array to hold column names
+            String[] columnNames = new String[columnCount];
 
             // Populate column names
             for (int i = 0; i < columnCount; i++) {
                 columnNames[i] = metaData.getColumnName(i + 1);
             }
 
-            tableModel.setColumnIdentifiers(columnNames); // Set column identifiers in the table model
-            tableModel.setRowCount(0); // Clear previous rows in the table
+            tableModel.setColumnIdentifiers(columnNames);
+            tableModel.setRowCount(0);
 
             // Load data into the table
             while (resultSet.next()) {
-                Object[] rowData = new Object[columnCount]; // Array to hold row data
+                Object[] rowData = new Object[columnCount];
                 for (int i = 0; i < columnCount; i++) {
-                    rowData[i] = resultSet.getObject(i + 1); // Retrieve data for each column
+                    rowData[i] = resultSet.getObject(i + 1);
                 }
-                tableModel.addRow(rowData); // Add row data to the table model
+                tableModel.addRow(rowData);
             }
         } catch (SQLException e) {
-            // Show error message if loading fails
             JOptionPane.showMessageDialog(this, "Error loading lecturer data.");
             e.printStackTrace();
         }
     }
 
-    // Method to insert a new lecturer
     private void insertLecturer(ActionEvent e) {
-        // Create input fields for lecturer details
+
         JTextField idField = new JTextField();  // User enters ID
         JTextField nameField = new JTextField();
         JTextField emailField = new JTextField();
         JTextField phoneField = new JTextField();
         JTextField genderField = new JTextField();
 
-        // Prepare message for the input dialog
         Object[] message = {
                 "ID:", idField,
                 "Name:", nameField,
@@ -106,31 +100,30 @@ public class LecturersPage extends JPanel {
                 "Gender: ", genderField
         };
 
-        // Show dialog for input
         int option = JOptionPane.showConfirmDialog(this, message, "Enter Lecturer Details", JOptionPane.OK_CANCEL_OPTION);
 
         if (option == JOptionPane.OK_OPTION) {
-            String idText = idField.getText().trim(); // Get ID input
-            String name = nameField.getText().trim(); // Get name input
-            String email = emailField.getText().trim(); // Get email input
-            String phoneNo = phoneField.getText().trim(); // Get phone number input
-            String gender = genderField.getText().trim(); // Get gender input
-            String password = "123456"; // Default password
+            String idText = idField.getText().trim();
+            String name = nameField.getText().trim();
+            String email = emailField.getText().trim();
+            String phoneNo = phoneField.getText().trim();
+            String gender = genderField.getText().trim();
+            String password = "123456";
 
-            // Validate input fields
+
             if (idText.isEmpty() || name.isEmpty() || email.isEmpty() || phoneNo.isEmpty() || gender.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "All fields must be filled!", "Error", JOptionPane.ERROR_MESSAGE);
-                return; // Exit if validation fails
+                return;
             }
 
             try {
-                int id = Integer.parseInt(idText);  // Convert ID to integer
+                int id = Integer.parseInt(idText);
 
-                // Insert lecturer into the database
+
                 try (Connection connection = Db_connect.getConnection();
                      PreparedStatement statement = connection.prepareStatement(
                              "INSERT INTO Users (user_id, name, email, password_hash, phone_no, gender, role) VALUES (?, ?, ?, ?, ?, ?, 'lecturer')")) {
-                    // Set parameters for the prepared statement
+
                     statement.setInt(1, id);
                     statement.setString(2, name);
                     statement.setString(3, email);
@@ -140,18 +133,17 @@ public class LecturersPage extends JPanel {
 
                     statement.executeUpdate(); // Execute the insert
                     JOptionPane.showMessageDialog(this, "Lecturer added successfully."); // Success message
-                    loadLecturers(); // Refresh the table
+                    loadLecturers();
                 }
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(this, "ID must be a number!", "Error", JOptionPane.ERROR_MESSAGE); // Error for invalid ID
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(this, "Error inserting lecturer: " + ex.getMessage());
-                ex.printStackTrace(); // Print stack trace for debugging
+                ex.printStackTrace();
             }
         }
     }
 
-    // Method to update selected lecturer's details
     private void updateLecturer(ActionEvent e) {
         int selectedRow = lecturerTable.getSelectedRow(); // Get the selected row
         if (selectedRow == -1) {
@@ -159,20 +151,17 @@ public class LecturersPage extends JPanel {
             return;
         }
 
-        // Get current details of the selected lecturer
         int userId = (int) tableModel.getValueAt(selectedRow, 0);
         String currentName = (String) tableModel.getValueAt(selectedRow, 1);
         String currentEmail = (String) tableModel.getValueAt(selectedRow, 2);
         String currentPhone = (String) tableModel.getValueAt(selectedRow, 3);
         String currentGender = (String) tableModel.getValueAt(selectedRow, 4);
 
-        // Create input fields with current values for editing
         JTextField nameField = new JTextField(currentName);
         JTextField emailField = new JTextField(currentEmail);
         JTextField phoneField = new JTextField(currentPhone);
         JTextField genderField = new JTextField(currentGender);
 
-        // Prepare message for the input dialog
         Object[] message = {
                 "Name:", nameField,
                 "Email:", emailField,
@@ -180,61 +169,54 @@ public class LecturersPage extends JPanel {
                 "Gender: ", genderField
         };
 
-        // Show dialog for updating lecturer details
         int option = JOptionPane.showConfirmDialog(this, message, "Update Lecturer Details", JOptionPane.OK_CANCEL_OPTION);
 
-        // If the user clicks OK, process the input
         if (option == JOptionPane.OK_OPTION) {
             String newName = nameField.getText().trim();
             String newEmail = emailField.getText().trim();
             String newPhone = phoneField.getText().trim();
             String newGender = genderField.getText().trim();
 
-            // Validate input fields
             if (newName.isEmpty() || newEmail.isEmpty() || newPhone.isEmpty() || newGender.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "All fields must be filled!", "Error", JOptionPane.ERROR_MESSAGE);
-                return; // Exit if validation fails
+                return;
             }
 
-            // Update lecturer details in the database
             try (Connection connection = Db_connect.getConnection();
                  PreparedStatement statement = connection.prepareStatement(
                          "UPDATE Users SET name=?, email=?, phone_no=?, gender=? WHERE user_id=? AND role='lecturer'")) {
 
-                // Set parameters for the prepared statement
                 statement.setString(1, newName);
                 statement.setString(2, newEmail);
                 statement.setString(3, newPhone);
                 statement.setString(4, newGender);
                 statement.setInt(5, userId);
-                statement.executeUpdate(); // Execute the update
+                statement.executeUpdate();
                 JOptionPane.showMessageDialog(this, "Lecturer updated successfully."); // Success message
-                loadLecturers(); // Refresh the table
+                loadLecturers();
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(this, "Error updating lecturer."); // Error message
-                ex.printStackTrace(); // Print stack trace for debugging
+                ex.printStackTrace();
             }
         }
     }
 
-    // Method to delete a selected lecturer
     private void deleteLecturer(ActionEvent e) {
-        int selectedRow = lecturerTable.getSelectedRow(); // Get the selected row
+        int selectedRow = lecturerTable.getSelectedRow();
         if (selectedRow == -1) {
             JOptionPane.showMessageDialog(this, "Select a lecturer to delete."); // Error if no row selected
             return;
         }
 
-        int userId = (int) tableModel.getValueAt(selectedRow, 0); // Get user ID for deletion
-        String lecturerName = (String) tableModel.getValueAt(selectedRow, 1); // Get lecturer name for confirmation
+        int userId = (int) tableModel.getValueAt(selectedRow, 0);
+        String lecturerName = (String) tableModel.getValueAt(selectedRow, 1);
 
-        // Confirm deletion
+
         int confirm = JOptionPane.showConfirmDialog(this,
                 "Are you sure you want to remove lecturer " + lecturerName + "?",
                 "Confirm Deletion",
                 JOptionPane.YES_NO_OPTION);
 
-        // If the user confirms, proceed with deletion
         if (confirm == JOptionPane.YES_OPTION) {
             try (Connection connection = Db_connect.getConnection();
                  PreparedStatement statement = connection.prepareStatement("DELETE FROM Users WHERE user_id=? AND role='lecturer'")) {

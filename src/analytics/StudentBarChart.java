@@ -30,13 +30,13 @@ public class StudentBarChart extends JPanel {
         chartPanel.setPreferredSize(new Dimension(400, 300));
 
         add(chartPanel, BorderLayout.CENTER);
-        refreshData(); // Initial data load
-        startAutoRefresh(); // Enable auto-refresh
+        refreshData();
+        startAutoRefresh();
     }
 
     private void refreshData() {
         SwingUtilities.invokeLater(() -> {
-            dataset.clear(); // Clear old data
+            dataset.clear();
 
             String query = """
             SELECT c.course_name, COUNT(e.student_id) AS student_count
@@ -63,13 +63,13 @@ public class StudentBarChart extends JPanel {
     }
 
     private void startAutoRefresh() {
-        timer = new Timer(true); // Daemon thread
+        timer = new Timer(true);
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 refreshData();
             }
-        }, 0, 5000); // Refresh every 5 seconds
+        }, 0, 5000);
     }
 
     public void stopAutoRefresh() {

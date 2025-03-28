@@ -19,14 +19,13 @@ public class LecCoursePage extends JPanel {
         this.lecturerId = lecturerId;
         setLayout(new BorderLayout());
 
-        // Create the top panel and set its layout
+        // Top Panel
         JPanel topPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = 1;
         gbc.insets = new Insets(5, 5, 5, 5); // Padding
 
-        // Title Section
         JPanel titlePanel = new JPanel();
         JLabel titleLabel = new JLabel("My Courses", SwingConstants.CENTER);
         titlePanel.add(titleLabel);
@@ -59,10 +58,8 @@ public class LecCoursePage extends JPanel {
         gbc.gridx = 2;
         topPanel.add(dropdownPanel, gbc);
 
-        // Add top panel to the NORTH region
         add(topPanel, BorderLayout.NORTH);
 
-        // Table setup
         tableModel = new DefaultTableModel();
         studentTable = new JTable(tableModel);
         studentTable.setPreferredScrollableViewportSize(new Dimension(400, 150));

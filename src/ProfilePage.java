@@ -12,17 +12,14 @@ public class ProfilePage extends JPanel {
         setBackground(Color.WHITE);
         setLayout(new BorderLayout());
 
-        // Main Profile Panel
         JPanel profilePanel = new JPanel(new BorderLayout());
         profilePanel.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
         profilePanel.setBackground(Color.WHITE);
 
-        // Profile Info Panel
         JPanel infoPanel = new JPanel(new GridLayout(5, 2, 10, 10));
         infoPanel.setBackground(Color.WHITE);
         infoPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Fetch and Display User Data
         String[] userData = getUserData(user_id);
         nameValue = new JLabel(userData[0]);
         emailValue = new JLabel(userData[1]);

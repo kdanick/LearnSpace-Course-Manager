@@ -21,24 +21,22 @@ public class LecturerEnrollmentTable extends JPanel {
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createTitledBorder("Students Enrolled in Your Courses"));
 
-        // Define table columns
         String[] columns = {"baseClasses.Student ID", "baseClasses.Student Name", "Course ID", "Course Name", "Enrolled On"};
         tableModel = new DefaultTableModel(columns, 0);
         table = new JTable(tableModel);
         table.setFillsViewportHeight(true);
 
-        // Add table inside scroll pane
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setPreferredSize(new Dimension(600, 300));
         add(scrollPane, BorderLayout.CENTER);
 
-        refreshData(); // Initial data load
-        startAutoRefresh(); // Enable auto-refresh
+        refreshData();
+        startAutoRefresh();
     }
 
     private void refreshData() {
         SwingUtilities.invokeLater(() -> {
-            tableModel.setRowCount(0); // Clear table before updating
+            tableModel.setRowCount(0);
 
             String query = """
                 SELECT e.student_id, s.name AS student_name, e.course_id, c.course_name, e.enrolled_on

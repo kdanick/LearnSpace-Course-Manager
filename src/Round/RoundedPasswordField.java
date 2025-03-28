@@ -9,7 +9,7 @@ public class RoundedPasswordField extends JPasswordField {
     public RoundedPasswordField(int columns, int radius) {
         super(columns);
         this.radius = radius;
-        setOpaque(false); // Make background transparent
+        setOpaque(false);
         setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
     }
 

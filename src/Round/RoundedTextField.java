@@ -4,11 +4,11 @@ import javax.swing.*;
 import java.awt.*;
 
 public class RoundedTextField extends JTextField {
-    private int radius = 25; // Corner radius for rounding
+    private int radius = 25;
 
     public RoundedTextField(int columns) {
         super(columns);
-        setOpaque(false);  // Make background transparent
+        setOpaque(false);
         setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15)); // Adjust padding
     }
 

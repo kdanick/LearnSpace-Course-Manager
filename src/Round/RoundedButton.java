@@ -6,28 +6,28 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class RoundedButton extends JButton {
-    private int radius = 25; // Corner radius for rounding
-    private Color defaultColor = new Color(0, 123, 255); // Default button color
-    private Color hoverColor = new Color(0, 86, 179); // Color on hover
+    private int radius = 25;
+    private Color defaultColor = new Color(0, 123, 255);
+    private Color hoverColor = new Color(0, 86, 179);
 
     public RoundedButton(String text) {
         super(text);
-        setFocusPainted(false); // Remove focus painting
-        setContentAreaFilled(false); // Make transparent
-        setOpaque(false); // Make background transparent
-        setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10)); // Adjust padding
-        setForeground(Color.WHITE); // Text color
-        setBackground(defaultColor); // Set default background color
+        setFocusPainted(false);
+        setContentAreaFilled(false);
+        setOpaque(false);
+        setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        setForeground(Color.WHITE);
+        setBackground(defaultColor);
 
         // Add hover effect
         addMouseListener(new MouseAdapter() {
             public void mouseEntered(MouseEvent e) {
-                setBackground(hoverColor); // Change background on hover
+                setBackground(hoverColor);
                 repaint();
             }
 
             public void mouseExited(MouseEvent e) {
-                setBackground(defaultColor); // Reset background color
+                setBackground(defaultColor);
                 repaint();
             }
         });
@@ -40,7 +40,7 @@ public class RoundedButton extends JButton {
         g2.setColor(getBackground());
         g2.fillRoundRect(0, 0, getWidth(), getHeight(), radius, radius); // Rounded background
 
-        g2.setColor(Color.WHITE); // Text color
+        g2.setColor(Color.WHITE);
         g2.setFont(getFont());
         FontMetrics fm = g2.getFontMetrics();
         int textWidth = fm.stringWidth(getText());
