@@ -5,12 +5,12 @@ public class MainApp extends JPanel {
     private JPanel contentPanel;
     private CardLayout cardLayout;
 
-    public MainApp(String role, String username) {
+    public MainApp(Integer user_id, String role, String username) {
         setLayout(new BorderLayout());
 
         cardLayout = new CardLayout();
         contentPanel = new JPanel(cardLayout);
-        initializeContentPanels();
+        initializeContentPanels(user_id);
 
         SidebarPanel sidebar = createSidebar(role, username);
 
@@ -18,16 +18,17 @@ public class MainApp extends JPanel {
         add(contentPanel, BorderLayout.CENTER);
     }
 
-    private void initializeContentPanels() {
-        contentPanel.add(new HomePage(), "Home");
-        contentPanel.add(new SettingsPage(), "Settings");
-        contentPanel.add(new ProfilePage("example@email.com"), "Profile");
+    private void initializeContentPanels(Integer user_id) {
+        contentPanel.add(new HomePage(user_id), "Home");
+        contentPanel.add(new ProfilePage(user_id), "Profile");
         contentPanel.add(new StudentsPage(), "Students");
         contentPanel.add(new CoursePage(), "Courses");
-        contentPanel.add(new AdminDashboard(), "Dashboard");
+        contentPanel.add(new LecCoursePage(user_id), "My Courses");
+        contentPanel.add(new AdminDashboard(user_id), "Dashboard");
         contentPanel.add(new LecturersPage(), "Lecturers");
         contentPanel.add(new UsersPage(), "Users");
-        contentPanel.add(new EnrollmentPage(), "Enrollments");
+        contentPanel.add(new EnrollmentPage(user_id), "Enrollments");
+        contentPanel.add(new GradesPage(user_id), "Grades");
     }
 
     private SidebarPanel createSidebar(String role, String username) {

@@ -96,7 +96,7 @@ public class Login extends JFrame {
         formPanel.add(roleLabel, gbc);
 
         // Role ComboBox
-        String[] roles = {"Admin", "Lecturer",};
+        String[] roles = {"admin", "lecturer",};
         JComboBox<String> roleComboBox = new JComboBox<>(roles);
         gbc.gridy = 6;
         formPanel.add(roleComboBox, gbc);
@@ -110,7 +110,9 @@ public class Login extends JFrame {
             String role = (String) roleComboBox.getSelectedItem();
 
             // Check if the credentials are valid
-            if (!Db_connect.authenticate(name, password_hash, role)) {
+            Integer user_id = Db_connect.authenticate(name, password_hash, role);
+
+            if (user_id == null) {
                 EMLabel.setText("Invalid username, password, or role.");
                 EMLabel.setVisible(true); // Show error message
             } else {
@@ -119,7 +121,7 @@ public class Login extends JFrame {
 
                 // Transition to the main application
                 SwingUtilities.invokeLater(() -> {
-                    app.showMainApp(role, name); // Pass role and username
+                    app.showMainApp(user_id, role, name); // Pass id, role and username
                     dispose(); // Close the login frame
                 });
             }
