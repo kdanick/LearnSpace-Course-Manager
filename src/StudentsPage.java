@@ -10,19 +10,30 @@ import Round.*;
 public class StudentsPage extends JPanel {
     private JTable StudentsTable; // Table to display student data
     private DefaultTableModel tableModel; // Model for the student table
+    private JComboBox<String> filterDropdown; // Dropdown to filter students
 
     public StudentsPage() {
         setLayout(new BorderLayout()); // Set layout manager for the main panel
 
-        // Top Panel with Title
+        // Top Panel with Title and Filter Dropdown
         JPanel topPanel = new JPanel(new BorderLayout()); // Create a panel for the title
 
         // Create and configure the title label
-        JLabel titleLabel = new JLabel("Students", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 32)); // Set font style
+        JLabel titleLabel = new JLabel("Students", SwingConstants.LEFT); // Align text to the left
         titleLabel.setForeground(Color.BLACK); // Set text color
-        titleLabel.setBorder(new EmptyBorder(20, 0, 20, 0)); // Add padding around the title
-        topPanel.add(titleLabel, BorderLayout.NORTH); // Add title label to the top panel
+        titleLabel.setBorder(new EmptyBorder(0, 20, 0, 0)); // Add padding to the left side
+        topPanel.add(titleLabel, BorderLayout.WEST); // Add title label to the left side of the top panel
+
+// Create a filter dropdown (combo box) for enrolled/unenrolled students
+        String[] filterOptions = {"All Students", "Enrolled", "Unenrolled"};
+        filterDropdown = new JComboBox<>(filterOptions);
+        filterDropdown.setPreferredSize(new Dimension(150, 30)); // Set size of the dropdown
+        filterDropdown.setMaximumSize(new Dimension(150, 30)); // Set maximum size for layout consistency
+        filterDropdown.addActionListener(this::filterStudents); // Add action listener for dropdown change
+        topPanel.add(filterDropdown, BorderLayout.EAST); // Add dropdown to the right side of the top panel
+
+        topPanel.setBorder(new EmptyBorder(10,10,10,10));
+
         add(topPanel, BorderLayout.NORTH); // Add top panel to the main panel
 
         // Table Model
@@ -34,7 +45,7 @@ public class StudentsPage extends JPanel {
         add(scrollPane, BorderLayout.CENTER); // Add scroll pane to the center of the main panel
 
         // Load Students from database
-        loadStudents(); // Call method to populate table with student data
+        loadStudents("All Students"); // Call method to populate table with student data
 
         // Buttons Panel
         JPanel buttonPanel = new JPanel(); // Create panel for buttons
@@ -55,10 +66,19 @@ public class StudentsPage extends JPanel {
     }
 
     // Method to load students from the database and display them in the table
-    private void loadStudents() {
+    private void loadStudents(String filter) {
         try (Connection connection = Db_connect.getConnection(); // Establish database connection
-             Statement statement = connection.createStatement(); // Create statement for executing queries
-             ResultSet resultSet = statement.executeQuery("SELECT student_id, name, email, gender FROM Students")) {
+             Statement statement = connection.createStatement()) {
+
+            // Modify the SQL query based on the selected filter
+            String sqlQuery = "SELECT student_id, name, email, gender FROM Students";
+            if ("Enrolled".equals(filter)) {
+                sqlQuery += " WHERE student_id IN (SELECT student_id FROM Enrollments)";
+            } else if ("Unenrolled".equals(filter)) {
+                sqlQuery += " WHERE student_id NOT IN (SELECT student_id FROM Enrollments)";
+            }
+
+            ResultSet resultSet = statement.executeQuery(sqlQuery); // Execute the query
 
             // Get column names from the result set
             ResultSetMetaData metaData = resultSet.getMetaData();
@@ -86,6 +106,12 @@ public class StudentsPage extends JPanel {
             JOptionPane.showMessageDialog(this, "Error loading student data.");
             e.printStackTrace(); // Print stack trace for debugging
         }
+    }
+
+    // Action listener for the filter dropdown
+    private void filterStudents(ActionEvent e) {
+        String selectedFilter = (String) filterDropdown.getSelectedItem(); // Get selected filter option
+        loadStudents(selectedFilter); // Reload the students based on the selected filter
     }
 
     // Method to insert a new student
@@ -136,7 +162,7 @@ public class StudentsPage extends JPanel {
 
                     statement.executeUpdate(); // Execute the insert
                     JOptionPane.showMessageDialog(this, "Student added successfully."); // Success message
-                    loadStudents(); // Refresh the table
+                    loadStudents("All Students"); // Refresh the table
                 }
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(this, "ID must be a number!", "Error", JOptionPane.ERROR_MESSAGE); // Error for invalid ID
@@ -200,7 +226,7 @@ public class StudentsPage extends JPanel {
                 statement.setInt(4, studentId);
                 statement.executeUpdate(); // Execute the update
                 JOptionPane.showMessageDialog(this, "Student updated successfully."); // Success message
-                loadStudents(); // Refresh the table
+                loadStudents("All Students"); // Refresh the table
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(this, "Error updating Student."); // Error message
                 ex.printStackTrace(); // Print stack trace for debugging
@@ -233,7 +259,7 @@ public class StudentsPage extends JPanel {
                 statement.setInt(1, studentId); // Set parameter for deletion
                 statement.executeUpdate(); // Execute the delete
                 JOptionPane.showMessageDialog(this, "Student removed successfully."); // Success message
-                loadStudents(); // Refresh the table
+                loadStudents("All Students"); // Refresh the table
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(this, "Error deleting Student."); // Error message
                 ex.printStackTrace(); // Print stack trace for debugging
