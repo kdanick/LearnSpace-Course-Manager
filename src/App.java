@@ -5,7 +5,7 @@ public class App {
     private final JFrame frame;
 
     public App() {
-        frame = new JFrame("LearnSpace");
+        frame = new JFrame("");
         Image logo = Toolkit.getDefaultToolkit().getImage("resources/logo.png");
         frame.setIconImage(logo);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
