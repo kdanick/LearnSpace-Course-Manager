@@ -1,5 +1,6 @@
 import DatabaseManager.Db_connect;
 import Round.RoundedButton;
+import baseClasses.User;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -9,13 +10,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UsersPage extends JPanel {
-    private JTable table; // Declare the table variable
+    private JTable table;
 
     public UsersPage() {
         setBackground(Color.WHITE);
         setLayout(new BorderLayout());
 
-        // Top Panel with Greetings
         JPanel topPanel = new JPanel();
         topPanel.setLayout(new GridLayout(2, 1));
         topPanel.setBackground(Color.WHITE);
@@ -39,12 +39,10 @@ public class UsersPage extends JPanel {
         RoundedButton editUserButton = new RoundedButton("Edit User");
         RoundedButton deleteUserButton = new RoundedButton("Delete User");
 
-        // Add action listeners for buttons
-        addUserButton.addActionListener(e -> openUserDialog(null)); // For adding a user
-
+        addUserButton.addActionListener(e -> openUserDialog(null));
         editUserButton.addActionListener(e -> {
             int selectedRow = table.getSelectedRow();
-            if (selectedRow != -1) { // Ensure a user is selected
+            if (selectedRow != -1) {
                 int userId = (Integer) table.getValueAt(selectedRow, 0);
                 String username = (String) table.getValueAt(selectedRow, 1);
                 String email = (String) table.getValueAt(selectedRow, 2);
@@ -53,7 +51,6 @@ public class UsersPage extends JPanel {
                 String phoneNumber = (String) table.getValueAt(selectedRow, 5);
                 String gender = (String) table.getValueAt(selectedRow, 6);
 
-                // Open dialog to edit the selected user
                 openUserDialog(new User(userId, username, email, password, role, phoneNumber, gender));
             } else {
                 JOptionPane.showMessageDialog(this, "Please select a user to edit.");
@@ -66,8 +63,8 @@ public class UsersPage extends JPanel {
                 int userId = (Integer) table.getValueAt(selectedRow, 0);
                 int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this user?", "Confirm Delete", JOptionPane.YES_NO_OPTION);
                 if (confirm == JOptionPane.YES_OPTION) {
-                    deleteUser(userId); // Call method to delete user
-                    refreshTable(); // Refresh table after deletion
+                    deleteUser(userId);
+                    refreshTable();
                 }
             } else {
                 JOptionPane.showMessageDialog(this, "Please select a user to delete.");
@@ -85,7 +82,7 @@ public class UsersPage extends JPanel {
         DefaultTableModel model = new DefaultTableModel(columnNames, 0);
         table = new JTable(model);
         JScrollPane scrollPane = new JScrollPane(table);
-        add(scrollPane, BorderLayout.CENTER); // Add the table to the center of the panel
+        add(scrollPane, BorderLayout.CENTER);
     }
 
     private void openUserDialog(User user) {
@@ -95,7 +92,7 @@ public class UsersPage extends JPanel {
         dialog.setLocationRelativeTo(this);
         dialog.setLayout(new GridLayout(8, 2));
 
-        JTextField user_idField = new JTextField(user != null ? String.valueOf(user.getUser_id()) : ""); // Convert int to String
+        JTextField userIdField = new JTextField(String.valueOf(user != null ? user.getUser_id() : ""));
         JTextField usernameField = new JTextField(user != null ? user.getUsername() : "");
         JTextField emailField = new JTextField(user != null ? user.getEmail() : "");
         JTextField passwordField = new JTextField(user != null ? user.getPassword() : "");
@@ -103,6 +100,8 @@ public class UsersPage extends JPanel {
         JTextField phoneField = new JTextField(user != null ? user.getPhoneNumber() : "");
         JTextField genderField = new JTextField(user != null ? user.getGender() : "");
 
+        dialog.add(new JLabel("User id: "));
+        dialog.add(userIdField);
         dialog.add(new JLabel("Username:"));
         dialog.add(usernameField);
         dialog.add(new JLabel("Email:"));
@@ -118,18 +117,13 @@ public class UsersPage extends JPanel {
 
         JButton saveButton = new JButton(user == null ? "Add" : "Save");
         saveButton.addActionListener(e -> {
-            try {
-                if (user == null) {
-                    int userId = Integer.parseInt(user_idField.getText().trim());
-                    addUser(userId, usernameField.getText().trim(), emailField.getText().trim(), passwordField.getText().trim(), roleField.getText().trim(), phoneField.getText().trim(), genderField.getText().trim());
-                } else {
-                    updateUser(user.getUser_id(), usernameField.getText().trim(), emailField.getText().trim(), passwordField.getText().trim(), roleField.getText().trim(), phoneField.getText().trim(), genderField.getText().trim());
-                }
-                dialog.dispose(); // Close the dialog
-                refreshTable(); // Refresh the table after adding/editing
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "User ID must be an integer.");
+            if (user == null) {
+                addUser(Integer.parseInt((userIdField.getText().trim())),usernameField.getText().trim(), emailField.getText().trim(), passwordField.getText().trim(), roleField.getText().trim(), phoneField.getText().trim(), genderField.getText().trim());
+            } else {
+                updateUser(user.getUser_id(), usernameField.getText().trim(), emailField.getText().trim(), passwordField.getText().trim(), roleField.getText().trim(), phoneField.getText().trim(), genderField.getText().trim());
             }
+            dialog.dispose();
+            refreshTable();
         });
 
         dialog.add(saveButton);
@@ -157,7 +151,7 @@ public class UsersPage extends JPanel {
             pstmt.executeUpdate();
             JOptionPane.showMessageDialog(this, "User added successfully.");
         } catch (SQLException e) {
-            e.printStackTrace(); // Print the exception stack trace for debugging
+            e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error adding user: " + e.getMessage());
         }
     }
@@ -173,7 +167,7 @@ public class UsersPage extends JPanel {
             pstmt.setString(4, role);
             pstmt.setString(5, phoneNumber);
             pstmt.setString(6, gender);
-            pstmt.setInt(7, userId); // Use setInt for integer userId
+            pstmt.setInt(7, userId);
             pstmt.executeUpdate();
             JOptionPane.showMessageDialog(this, "User updated successfully.");
         } catch (SQLException e) {
@@ -187,7 +181,7 @@ public class UsersPage extends JPanel {
 
         try (Connection conn = Db_connect.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, userId); // Use setInt for integer userId
+            pstmt.setInt(1, userId);
             pstmt.executeUpdate();
             JOptionPane.showMessageDialog(this, "User deleted successfully.");
         } catch (SQLException e) {
@@ -199,7 +193,7 @@ public class UsersPage extends JPanel {
     private void refreshTable() {
         List<User> users = getAllUsers();
         DefaultTableModel model = (DefaultTableModel) table.getModel();
-        model.setRowCount(0); // Clear existing rows
+        model.setRowCount(0);
 
         for (User user : users) {
             model.addRow(new Object[]{
@@ -222,49 +216,19 @@ public class UsersPage extends JPanel {
              PreparedStatement pstmt = conn.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
             while (rs.next()) {
-                int user_id = rs.getInt("user_id"); // Use getInt for integer user_id
-                String name = rs.getString("name");
-                String email = rs.getString("email");
-                String password_hash = rs.getString("password_hash");
-                String role = rs.getString("role");
-                String phone_no = rs.getString("phone_no");
-                String gender = rs.getString("gender");
-                users.add(new User(user_id, name, email, password_hash, role, phone_no, gender));
+                users.add(new User(
+                        rs.getInt("user_id"),
+                        rs.getString("name"),
+                        rs.getString("email"),
+                        rs.getString("password_hash"),
+                        rs.getString("role"),
+                        rs.getString("phone_no"),
+                        rs.getString("gender")
+                ));
             }
-            System.out.println("Fetched users: " + users.size()); // Debugging line
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return users;
-    }
-
-    // Inner User class
-    private class User {
-        private int user_id; // Change to integer
-        private String name;
-        private String email;
-        private String password_hash;
-        private String role;
-        private String phone_no;
-        private String gender;
-
-        public User(int user_id, String name, String email, String password_hash, String role, String phone_no, String gender) {
-            this.user_id = user_id;
-            this.name = name;
-            this.email = email;
-            this.password_hash = password_hash;
-            this.role = role;
-            this.phone_no = phone_no;
-            this.gender = gender; // Initialize new field
-        }
-
-        // Getters
-        public int getUser_id() { return user_id; } // Change return type to int
-        public String getUsername() { return name; }
-        public String getEmail() { return email; }
-        public String getPassword() { return password_hash; }
-        public String getRole() { return role; }
-        public String getPhoneNumber() { return phone_no; }
-        public String getGender() { return gender; }
     }
 }

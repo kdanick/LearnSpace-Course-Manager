@@ -68,12 +68,12 @@ public class CoursePage extends JPanel {
             tableModel.setColumnIdentifiers(new String[]{"Course ID", "Course Name", "Credits", "Lecturer ID", "Lecturer"});
 
             while (resultSet.next()) {
-                Object userId = resultSet.getObject("user_id");  // Use getObject() to allow NULL values
+                Object userId = resultSet.getObject("user_id");
                 Object[] rowData = {
                         resultSet.getString("course_id"),
                         resultSet.getString("course_name"),
                         resultSet.getInt("credits"),
-                        userId != null ? userId.toString() : "",  // Empty string instead of "NULL"
+                        userId != null ? userId.toString() : "",
                         resultSet.getString("lecturer_name")
                 };
                 tableModel.addRow(rowData);

@@ -24,8 +24,8 @@ public class EnrollmentPage extends JPanel {
         setBorder(BorderFactory.createTitledBorder("baseClasses.Student Enrollments"));
 
         // Search Bar
-        JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT)); // Align to the right
-        searchField = new JTextField(15); // Smaller width
+        JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        searchField = new JTextField(15);
         searchPanel.add(new JLabel("Search: "));
         searchPanel.add(searchField);
         add(searchPanel, BorderLayout.NORTH);
@@ -36,7 +36,6 @@ public class EnrollmentPage extends JPanel {
         table = new JTable(tableModel);
         table.setFillsViewportHeight(true);
 
-        // Add table inside scroll pane
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setPreferredSize(new Dimension(700, 300));
         add(scrollPane, BorderLayout.CENTER);
@@ -47,7 +46,6 @@ public class EnrollmentPage extends JPanel {
         RoundedButton updateButton = new RoundedButton("Update Enrollment");
         RoundedButton deleteButton = new RoundedButton("Delete Enrollment");
 
-        // Button Actions
         insertButton.addActionListener(e -> insertEnrollment());
         updateButton.addActionListener(e -> updateEnrollment());
         deleteButton.addActionListener(e -> deleteEnrollment());
