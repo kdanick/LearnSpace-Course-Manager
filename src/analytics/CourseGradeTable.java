@@ -19,13 +19,11 @@ public class CourseGradeTable extends JPanel {
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createTitledBorder("Average Grade per Course"));
 
-        // Define table columns
         String[] columns = {"Course ID", "Course Name", "Average Grade", "Average Score"};
         tableModel = new DefaultTableModel(columns, 0);
         table = new JTable(tableModel);
         table.setFillsViewportHeight(true);
 
-        // Add table inside scroll pane
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setPreferredSize(new Dimension(450, 200));
         add(scrollPane, BorderLayout.CENTER);
@@ -70,12 +68,12 @@ public class CourseGradeTable extends JPanel {
     }
 
     private void startAutoRefresh() {
-        Timer timer = new Timer(true); // Daemon thread
+        Timer timer = new Timer(true);
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 refreshData();
             }
-        }, 0, 5000); // Refresh every 10 seconds
+        }, 0, 5000);
     }
 }
