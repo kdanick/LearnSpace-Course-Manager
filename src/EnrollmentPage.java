@@ -21,7 +21,7 @@ public class EnrollmentPage extends JPanel {
     public EnrollmentPage(int lecturerId) {
         this.lecturerId = lecturerId;
         setLayout(new BorderLayout());
-        setBorder(BorderFactory.createTitledBorder("Student Enrollments"));
+        setBorder(BorderFactory.createTitledBorder("baseClasses.Student Enrollments"));
 
         // Search Bar
         JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT)); // Align to the right
@@ -31,7 +31,7 @@ public class EnrollmentPage extends JPanel {
         add(searchPanel, BorderLayout.NORTH);
 
         // Define table columns
-        String[] columns = {"Student ID", "Student Name", "Course ID", "Course Name", "Enrolled On"};
+        String[] columns = {"baseClasses.Student ID", "baseClasses.Student Name", "Course ID", "Course Name", "Enrolled On"};
         tableModel = new DefaultTableModel(columns, 0);
         table = new JTable(tableModel);
         table.setFillsViewportHeight(true);
@@ -111,7 +111,7 @@ public class EnrollmentPage extends JPanel {
         JTextField courseIdField = new JTextField();
 
         Object[] message = {
-                "Student ID:", studentIdField,
+                "baseClasses.Student ID:", studentIdField,
                 "Course ID:", courseIdField
         };
 

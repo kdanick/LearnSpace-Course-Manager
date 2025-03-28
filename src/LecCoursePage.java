@@ -85,7 +85,7 @@ public class LecCoursePage extends JPanel {
 
     private void fetchStudentsForCourse(String courseName) {
         tableModel.setRowCount(0);
-        tableModel.setColumnIdentifiers(new String[]{"Student ID", "Name", "Email", "Grade", "Score"});
+        tableModel.setColumnIdentifiers(new String[]{"baseClasses.Student ID", "Name", "Email", "Grade", "Score"});
 
         try (Connection conn = Db_connect.getConnection();
              PreparedStatement stmt = conn.prepareStatement(

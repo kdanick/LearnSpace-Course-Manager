@@ -26,7 +26,7 @@ public class GradesPage extends JPanel {
         add(topPanel, BorderLayout.NORTH);
 
         // Table Setup
-        tableModel = new DefaultTableModel(new String[]{"Student ID", "Student Name", "Course ID", "Score", "Grade"}, 0);
+        tableModel = new DefaultTableModel(new String[]{"baseClasses.Student ID", "baseClasses.Student Name", "Course ID", "Score", "Grade"}, 0);
         table = new JTable(tableModel);
         JScrollPane scrollPane = new JScrollPane(table);
         add(scrollPane, BorderLayout.CENTER);
@@ -101,7 +101,7 @@ public class GradesPage extends JPanel {
             return;
         }
 
-        Object[] message = {"Student ID:", studentIdField, "Score:", scoreField};
+        Object[] message = {"baseClasses.Student ID:", studentIdField, "Score:", scoreField};
         int option = JOptionPane.showConfirmDialog(this, message, "Insert Grade", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
             try (Connection conn = Db_connect.getConnection();

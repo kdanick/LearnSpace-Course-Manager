@@ -22,7 +22,7 @@ public class LecturerEnrollmentTable extends JPanel {
         setBorder(BorderFactory.createTitledBorder("Students Enrolled in Your Courses"));
 
         // Define table columns
-        String[] columns = {"Student ID", "Student Name", "Course ID", "Course Name", "Enrolled On"};
+        String[] columns = {"baseClasses.Student ID", "baseClasses.Student Name", "Course ID", "Course Name", "Enrolled On"};
         tableModel = new DefaultTableModel(columns, 0);
         table = new JTable(tableModel);
         table.setFillsViewportHeight(true);

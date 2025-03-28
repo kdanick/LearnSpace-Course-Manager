@@ -49,8 +49,8 @@ public class StudentsPage extends JPanel {
 
         // Buttons Panel
         JPanel buttonPanel = new JPanel(); // Create panel for buttons
-        RoundedButton insertButton = new RoundedButton("Add Student"); // Button to add a student
-        RoundedButton updateButton = new RoundedButton("Edit Student"); // Button to edit selected student
+        RoundedButton insertButton = new RoundedButton("Add baseClasses.Student"); // Button to add a student
+        RoundedButton updateButton = new RoundedButton("Edit baseClasses.Student"); // Button to edit selected student
         RoundedButton deleteButton = new RoundedButton("Remove Students"); // Button to delete selected student
 
         // Add buttons to the button panel
@@ -131,7 +131,7 @@ public class StudentsPage extends JPanel {
         };
 
         // Show dialog for input
-        int option = JOptionPane.showConfirmDialog(this, message, "Enter Student Details", JOptionPane.OK_CANCEL_OPTION);
+        int option = JOptionPane.showConfirmDialog(this, message, "Enter baseClasses.Student Details", JOptionPane.OK_CANCEL_OPTION);
 
         // If the user clicks OK, process the input
         if (option == JOptionPane.OK_OPTION) {
@@ -161,13 +161,13 @@ public class StudentsPage extends JPanel {
                     statement.setString(4, gender);
 
                     statement.executeUpdate(); // Execute the insert
-                    JOptionPane.showMessageDialog(this, "Student added successfully."); // Success message
+                    JOptionPane.showMessageDialog(this, "baseClasses.Student added successfully."); // Success message
                     loadStudents("All Students"); // Refresh the table
                 }
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(this, "ID must be a number!", "Error", JOptionPane.ERROR_MESSAGE); // Error for invalid ID
             } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Error inserting Student: " + ex.getMessage());
+                JOptionPane.showMessageDialog(this, "Error inserting baseClasses.Student: " + ex.getMessage());
                 ex.printStackTrace(); // Print stack trace for debugging
             }
         }
@@ -200,7 +200,7 @@ public class StudentsPage extends JPanel {
         };
 
         // Show dialog for updating student details
-        int option = JOptionPane.showConfirmDialog(this, message, "Update Student Details", JOptionPane.OK_CANCEL_OPTION);
+        int option = JOptionPane.showConfirmDialog(this, message, "Update baseClasses.Student Details", JOptionPane.OK_CANCEL_OPTION);
 
         // If the user clicks OK, process the input
         if (option == JOptionPane.OK_OPTION) {
@@ -225,10 +225,10 @@ public class StudentsPage extends JPanel {
                 statement.setString(3, newGender);
                 statement.setInt(4, studentId);
                 statement.executeUpdate(); // Execute the update
-                JOptionPane.showMessageDialog(this, "Student updated successfully."); // Success message
+                JOptionPane.showMessageDialog(this, "baseClasses.Student updated successfully."); // Success message
                 loadStudents("All Students"); // Refresh the table
             } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Error updating Student."); // Error message
+                JOptionPane.showMessageDialog(this, "Error updating baseClasses.Student."); // Error message
                 ex.printStackTrace(); // Print stack trace for debugging
             }
         }
@@ -258,10 +258,10 @@ public class StudentsPage extends JPanel {
 
                 statement.setInt(1, studentId); // Set parameter for deletion
                 statement.executeUpdate(); // Execute the delete
-                JOptionPane.showMessageDialog(this, "Student removed successfully."); // Success message
+                JOptionPane.showMessageDialog(this, "baseClasses.Student removed successfully."); // Success message
                 loadStudents("All Students"); // Refresh the table
             } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Error deleting Student."); // Error message
+                JOptionPane.showMessageDialog(this, "Error deleting baseClasses.Student."); // Error message
                 ex.printStackTrace(); // Print stack trace for debugging
             }
         }
