@@ -4,23 +4,28 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import javax.swing.Timer;
 import DatabaseManager.Db_connect;
 import analytics.*;
 
 public class AdminDashboard extends JPanel {
+    private ArrayList<JLabel> valueLabels = new ArrayList<>(); // Store card value labels
+    private JPanel cardsPanel;
+
     public AdminDashboard(Integer user_id) {
         setLayout(new BorderLayout());
         setBackground(Color.LIGHT_GRAY);
 
         // **TOP PANEL: Dashboard Cards**
-        JPanel cardsPanel = new JPanel(new GridLayout(1, 4, 20, 0));
+        cardsPanel = new JPanel(new GridLayout(1, 4, 20, 0));
         cardsPanel.setBackground(Color.LIGHT_GRAY);
         cardsPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 10, 20));
 
-        cardsPanel.add(createDashboardCard("Courses", "SELECT COUNT(*) FROM Courses", Color.LIGHT_GRAY));
-        cardsPanel.add(createDashboardCard("Students", "SELECT COUNT(*) FROM Students", Color.WHITE));
-        cardsPanel.add(createDashboardCard("Enrollments", "SELECT COUNT(*) FROM Enrollments", Color.ORANGE));
-        cardsPanel.add(createDashboardCard("Instructors", "SELECT COUNT(*) FROM Users WHERE role='lecturer'", Color.YELLOW));
+        addDashboardCard("Courses", "SELECT COUNT(*) FROM Courses", Color.LIGHT_GRAY);
+        addDashboardCard("Students", "SELECT COUNT(*) FROM Students", Color.WHITE);
+        addDashboardCard("Enrollments", "SELECT COUNT(*) FROM Enrollments", Color.ORANGE);
+        addDashboardCard("Instructors", "SELECT COUNT(*) FROM Users WHERE role='lecturer'", Color.YELLOW);
 
         // **BOTTOM PANEL: Analytics + Table**
         JPanel analyticsPanel = new JPanel(new GridBagLayout());
@@ -60,10 +65,13 @@ public class AdminDashboard extends JPanel {
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
         add(scrollPane, BorderLayout.CENTER);
+
+        // **Start Auto Refresh for Dashboard Cards**
+        startAutoRefresh();
     }
 
-    // **DASHBOARD CARDS**
-    private JPanel createDashboardCard(String title, String query, Color bgColor) {
+    // **DASHBOARD CARDS - Create and Store Labels**
+    private void addDashboardCard(String title, String query, Color bgColor) {
         JPanel card = new JPanel(new BorderLayout());
         card.setBackground(bgColor);
         card.setBorder(BorderFactory.createLineBorder(Color.GRAY, 2));
@@ -72,18 +80,21 @@ public class AdminDashboard extends JPanel {
         JLabel titleLabel = new JLabel(title, SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 16));
         titleLabel.setForeground(Color.BLACK);
-        titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0)); // Added spacing above title
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
 
         JLabel valueLabel = new JLabel(fetchCountFromDatabase(query), SwingConstants.CENTER);
         valueLabel.setFont(new Font("Arial", Font.PLAIN, 20));
         valueLabel.setForeground(Color.BLACK);
 
+        valueLabels.add(valueLabel); // Store for later updates
+
         card.add(titleLabel, BorderLayout.NORTH);
         card.add(valueLabel, BorderLayout.CENTER);
 
-        return card;
+        cardsPanel.add(card);
     }
 
+    // **Fetch Data from Database**
     private String fetchCountFromDatabase(String query) {
         try (Connection conn = Db_connect.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query);
@@ -95,5 +106,26 @@ public class AdminDashboard extends JPanel {
             e.printStackTrace();
         }
         return "N/A";
+    }
+
+    // **Auto Refresh Dashboard Every 10 Seconds**
+    private void startAutoRefresh() {
+        Timer timer = new Timer(10_000, e -> updateDashboardCards());
+        timer.start();
+    }
+
+    // **Update Dashboard Cards**
+    private void updateDashboardCards() {
+        String[] queries = {
+                "SELECT COUNT(*) FROM Courses",
+                "SELECT COUNT(*) FROM Students",
+                "SELECT COUNT(*) FROM Enrollments",
+                "SELECT COUNT(*) FROM Users WHERE role='lecturer'"
+        };
+
+        for (int i = 0; i < valueLabels.size(); i++) {
+            String newValue = fetchCountFromDatabase(queries[i]);
+            valueLabels.get(i).setText(newValue);
+        }
     }
 }

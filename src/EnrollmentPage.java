@@ -3,207 +3,240 @@ import Round.RoundedButton;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 import java.awt.*;
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class EnrollmentPage extends JPanel {
-    private JTable table; // Make table accessible for refreshing
+    private JTable table;
+    private DefaultTableModel tableModel;
+    private int lecturerId;
+    private JTextField searchField;
 
-    public EnrollmentPage() {
-        setBackground(Color.WHITE);
+    public EnrollmentPage(int lecturerId) {
+        this.lecturerId = lecturerId;
         setLayout(new BorderLayout());
+        setBorder(BorderFactory.createTitledBorder("Student Enrollments"));
 
-        // Top Panel with Title
-        JPanel topPanel = new JPanel();
-        topPanel.setLayout(new GridLayout(2, 1));
-        topPanel.setBackground(Color.WHITE); // White background
+        // Search Bar
+        JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT)); // Align to the right
+        searchField = new JTextField(15); // Smaller width
+        searchPanel.add(new JLabel("Search: "));
+        searchPanel.add(searchField);
+        add(searchPanel, BorderLayout.NORTH);
 
-        JLabel titleLabel = new JLabel("Enrollment Management", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 28));
-        titleLabel.setForeground(Color.BLACK); // Black text
+        // Define table columns
+        String[] columns = {"Student ID", "Student Name", "Course ID", "Course Name", "Enrolled On"};
+        tableModel = new DefaultTableModel(columns, 0);
+        table = new JTable(tableModel);
+        table.setFillsViewportHeight(true);
 
-        topPanel.add(titleLabel);
-        add(topPanel, BorderLayout.NORTH);
-
-        // Fetch enrollment data from the database
-        List<Enrollment> enrollments = getAllEnrollments();
-
-        // Prepare table data
-        String[] columnNames = {"Enrollment ID", "Student ID", "Course ID", "Enrolled On"};
-        Object[][] enrollmentData = new Object[enrollments.size()][columnNames.length];
-
-        for (int i = 0; i < enrollments.size(); i++) {
-            Enrollment enrollment = enrollments.get(i);
-            enrollmentData[i][0] = enrollment.getEnrollmentId();
-            enrollmentData[i][1] = enrollment.getStudentId();
-            enrollmentData[i][2] = enrollment.getCourseId();
-            enrollmentData[i][3] = enrollment.getEnrolledOn();
-        }
-
-        table = new JTable(new DefaultTableModel(enrollmentData, columnNames));
-        table.setBackground(Color.WHITE); // White background
-        table.setForeground(Color.BLACK); // Black text
-        table.setGridColor(Color.BLACK); // Black grid lines
-        table.setFont(new Font("Arial", Font.PLAIN, 14));
-        table.setRowHeight(25);
-
+        // Add table inside scroll pane
         JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setPreferredSize(new Dimension(700, 300));
         add(scrollPane, BorderLayout.CENTER);
 
-        // Button panel for enrollment actions
+        // Buttons Panel
         JPanel buttonPanel = new JPanel();
-        RoundedButton addEnrollmentButton = new RoundedButton("Add Enrollment");
-        RoundedButton deleteEnrollmentButton = new RoundedButton("Delete Enrollment");
+        RoundedButton insertButton = new RoundedButton("Insert Enrollment");
+        RoundedButton updateButton = new RoundedButton("Update Enrollment");
+        RoundedButton deleteButton = new RoundedButton("Delete Enrollment");
 
-        // Add action listeners for buttons
-        addEnrollmentButton.addActionListener(e -> openEnrollmentDialog(null)); // For adding an enrollment
+        // Button Actions
+        insertButton.addActionListener(e -> insertEnrollment());
+        updateButton.addActionListener(e -> updateEnrollment());
+        deleteButton.addActionListener(e -> deleteEnrollment());
 
-        deleteEnrollmentButton.addActionListener(e -> {
-            int selectedRow = table.getSelectedRow();
-            if (selectedRow != -1) {
-                String enrollmentId = (String) table.getValueAt(selectedRow, 0);
-                int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this enrollment?", "Confirm Delete", JOptionPane.YES_NO_OPTION);
-                if (confirm == JOptionPane.YES_OPTION) {
-                    deleteEnrollment(enrollmentId); // Call method to delete enrollment
-                    refreshTable(); // Refresh table after deletion
-                }
-            } else {
-                JOptionPane.showMessageDialog(this, "Please select an enrollment to delete.");
-            }
-        });
-
-        buttonPanel.add(addEnrollmentButton);
-        buttonPanel.add(deleteEnrollmentButton);
+        buttonPanel.add(insertButton);
+        buttonPanel.add(updateButton);
+        buttonPanel.add(deleteButton);
         add(buttonPanel, BorderLayout.SOUTH);
-    }
 
-    private void openEnrollmentDialog(Enrollment enrollment) {
-        JDialog dialog = new JDialog();
-        dialog.setTitle(enrollment == null ? "Add Enrollment" : "Edit Enrollment");
-        dialog.setSize(400, 200);
-        dialog.setLocationRelativeTo(this);
-        dialog.setLayout(new GridLayout(5, 2));
+        // Fetch data
+        fetchDataFromDatabase();
 
-        JTextField enrollmentIdField = new JTextField(enrollment != null ? enrollment.getEnrollmentId() : "");
-        JTextField studentIdField = new JTextField(enrollment != null ? enrollment.getStudentId() : "");
-        JTextField courseIdField = new JTextField(enrollment != null ? enrollment.getCourseId() : "");
-        JTextField enrolledOnField = new JTextField(enrollment != null ? enrollment.getEnrolledOn() : "");
-
-        dialog.add(new JLabel("Enrollment ID:"));
-        dialog.add(enrollmentIdField);
-        dialog.add(new JLabel("Student ID:"));
-        dialog.add(studentIdField);
-        dialog.add(new JLabel("Course ID:"));
-        dialog.add(courseIdField);
-        dialog.add(new JLabel("Enrolled On:"));
-        dialog.add(enrolledOnField);
-
-        JButton saveButton = new JButton("Save");
-        saveButton.addActionListener(e -> {
-            if (enrollment == null) {
-                addEnrollment(enrollmentIdField.getText(), studentIdField.getText(), courseIdField.getText(), enrolledOnField.getText());
+        // Add search functionality
+        searchField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                filterTable(searchField.getText());
             }
-            dialog.dispose(); // Close the dialog
-            refreshTable(); // Refresh the table after adding/editing
         });
-
-        dialog.add(saveButton);
-        dialog.setVisible(true);
     }
 
-    private void addEnrollment(String enrollmentId, String studentId, String courseId, String enrolledOn) {
-        String sql = "INSERT INTO enrollments (enrollment_id, student_id, course_id, enrolled_on) VALUES (?, ?, ?, ?)";
+    private void fetchDataFromDatabase() {
+        String query = """
+        SELECT e.student_id, s.name AS student_name, e.course_id, c.course_name, e.enrolled_on
+        FROM Enrollments e
+        JOIN Students s ON e.student_id = s.student_id
+        JOIN Courses c ON e.course_id = c.course_id
+        WHERE c.lecturer_id = ?
+        ORDER BY c.course_name, s.name;
+        """;
 
-        // Input validation
-        if (studentId.isEmpty() || courseId.isEmpty() || enrolledOn.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "All fields are required.");
+        try (Connection conn = Db_connect.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setInt(1, lecturerId);
+            ResultSet rs = pstmt.executeQuery();
+
+            tableModel.setRowCount(0); // Clear table before inserting new rows
+            while (rs.next()) {
+                int studentId = rs.getInt("student_id");
+                String studentName = rs.getString("student_name");
+                String courseId = rs.getString("course_id");
+                String courseName = rs.getString("course_name");
+                String enrolledOn = rs.getTimestamp("enrolled_on").toString();
+
+                tableModel.addRow(new Object[]{studentId, studentName, courseId, courseName, enrolledOn});
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error fetching enrollment data!", "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void filterTable(String query) {
+        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(tableModel);
+        table.setRowSorter(sorter);
+        sorter.setRowFilter(RowFilter.regexFilter("(?i)" + query));
+    }
+
+    private void insertEnrollment() {
+        JTextField studentIdField = new JTextField();
+        JTextField courseIdField = new JTextField();
+
+        Object[] message = {
+                "Student ID:", studentIdField,
+                "Course ID:", courseIdField
+        };
+
+        int option = JOptionPane.showConfirmDialog(this, message, "Insert Enrollment", JOptionPane.OK_CANCEL_OPTION);
+        if (option == JOptionPane.OK_OPTION) {
+            String courseId = courseIdField.getText();
+            int studentId = Integer.parseInt(studentIdField.getText());
+
+            try (Connection conn = Db_connect.getConnection()) {
+                // Check if the course is taught by the lecturer
+                String checkQuery = "SELECT COUNT(*) FROM Courses WHERE course_id = ? AND lecturer_id = ?";
+                try (PreparedStatement checkStmt = conn.prepareStatement(checkQuery)) {
+                    checkStmt.setString(1, courseId);
+                    checkStmt.setInt(2, lecturerId);
+                    ResultSet rs = checkStmt.executeQuery();
+
+                    if (rs.next() && rs.getInt(1) > 0) {
+                        // If course exists under lecturer, insert enrollment
+                        String insertQuery = "INSERT INTO Enrollments (student_id, course_id, enrolled_on) VALUES (?, ?, NOW())";
+                        try (PreparedStatement pstmt = conn.prepareStatement(insertQuery)) {
+                            pstmt.setInt(1, studentId);
+                            pstmt.setString(2, courseId);
+                            pstmt.executeUpdate();
+
+                            JOptionPane.showMessageDialog(this, "Enrollment added successfully.");
+                            refreshTable();
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(this, "You are not authorized to enroll students in this course.",
+                                "Permission Denied", JOptionPane.WARNING_MESSAGE);
+                    }
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error inserting enrollment: " + e.getMessage());
+            }
+        }
+    }
+
+    private void updateEnrollment() {
+        int selectedRow = table.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Please select an enrollment to update.", "No Selection", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        try (Connection conn = Db_connect.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, enrollmentId);
-            pstmt.setString(2, studentId);
-            pstmt.setString(3, courseId);
-            pstmt.setString(4, enrolledOn);
-            pstmt.executeUpdate();
-            JOptionPane.showMessageDialog(this, "Enrollment added successfully.");
-        } catch (SQLException e) {
-            e.printStackTrace(); // Print the exception stack trace for debugging
-            JOptionPane.showMessageDialog(this, "Error adding enrollment: " + e.getMessage());
+        int studentId = (int) tableModel.getValueAt(selectedRow, 0);
+        String courseId = (String) tableModel.getValueAt(selectedRow, 2);
+
+        JTextField newCourseIdField = new JTextField(courseId);
+
+        Object[] message = {
+                "New Course ID:", newCourseIdField
+        };
+
+        int option = JOptionPane.showConfirmDialog(this, message, "Update Enrollment", JOptionPane.OK_CANCEL_OPTION);
+        if (option == JOptionPane.OK_OPTION) {
+            String newCourseId = newCourseIdField.getText();
+
+            try (Connection conn = Db_connect.getConnection()) {
+                // Check if the new course belongs to the same lecturer
+                String checkQuery = "SELECT COUNT(*) FROM Courses WHERE course_id = ? AND lecturer_id = ?";
+                try (PreparedStatement checkStmt = conn.prepareStatement(checkQuery)) {
+                    checkStmt.setString(1, newCourseId);
+                    checkStmt.setInt(2, lecturerId);
+                    ResultSet rs = checkStmt.executeQuery();
+
+                    if (rs.next() && rs.getInt(1) > 0) {
+                        // Perform the update
+                        String updateQuery = "UPDATE Enrollments SET course_id = ? WHERE student_id = ? AND course_id = ?";
+                        try (PreparedStatement pstmt = conn.prepareStatement(updateQuery)) {
+                            pstmt.setString(1, newCourseId);
+                            pstmt.setInt(2, studentId);
+                            pstmt.setString(3, courseId);
+                            pstmt.executeUpdate();
+
+                            JOptionPane.showMessageDialog(this, "Enrollment updated successfully.");
+                            refreshTable();
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(this, "You are not authorized to assign this course.",
+                                "Permission Denied", JOptionPane.WARNING_MESSAGE);
+                    }
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error updating enrollment: " + e.getMessage());
+            }
         }
     }
 
-    private void deleteEnrollment(String enrollmentId) {
-        String sql = "DELETE FROM enrollments WHERE enrollment_id = ?";
+    private void deleteEnrollment() {
+        int selectedRow = table.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Please select an enrollment to delete.", "No Selection", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
 
-        try (Connection conn = Db_connect.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, enrollmentId);
-            pstmt.executeUpdate();
-            JOptionPane.showMessageDialog(this, "Enrollment deleted successfully.");
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error deleting enrollment: " + e.getMessage());
+        int studentId = (int) tableModel.getValueAt(selectedRow, 0);
+        String courseId = (String) tableModel.getValueAt(selectedRow, 2);
+
+        int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this enrollment?", "Confirm Deletion", JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) {
+            try (Connection conn = Db_connect.getConnection()) {
+                String deleteQuery = "DELETE FROM Enrollments WHERE student_id = ? AND course_id = ?";
+                try (PreparedStatement pstmt = conn.prepareStatement(deleteQuery)) {
+                    pstmt.setInt(1, studentId);
+                    pstmt.setString(2, courseId);
+                    pstmt.executeUpdate();
+
+                    JOptionPane.showMessageDialog(this, "Enrollment deleted successfully.");
+                    refreshTable();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error deleting enrollment: " + e.getMessage());
+            }
         }
     }
+
 
     private void refreshTable() {
-        List<Enrollment> enrollments = getAllEnrollments();
-        DefaultTableModel model = (DefaultTableModel) table.getModel();
-        model.setRowCount(0); // Clear existing rows
-
-        for (Enrollment enrollment : enrollments) {
-            model.addRow(new Object[]{
-                    enrollment.getEnrollmentId(),
-                    enrollment.getStudentId(),
-                    enrollment.getCourseId(),
-                    enrollment.getEnrolledOn()
-            });
-        }
-    }
-
-    private List<Enrollment> getAllEnrollments() {
-        List<Enrollment> enrollments = new ArrayList<>();
-        String sql = "SELECT enrollment_id, student_id, course_id, enrolled_on FROM enrollments";
-
-        try (Connection conn = Db_connect.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql);
-             ResultSet rs = pstmt.executeQuery()) {
-            while (rs.next()) {
-                String enrollmentId = rs.getString("enrollment_id");
-                String studentId = rs.getString("student_id");
-                String courseId = rs.getString("course_id");
-                String enrolledOn = rs.getString("enrolled_on");
-                enrollments.add(new Enrollment(enrollmentId, studentId, courseId, enrolledOn));
-            }
-            System.out.println("Fetched enrollments: " + enrollments.size()); // Debugging line
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return enrollments;
-    }
-
-    // Inner Enrollment class
-    private class Enrollment {
-        private String enrollmentId;
-        private String studentId;
-        private String courseId;
-        private String enrolledOn;
-
-        public Enrollment(String enrollmentId, String studentId, String courseId, String enrolledOn) {
-            this.enrollmentId = enrollmentId;
-            this.studentId = studentId;
-            this.courseId = courseId;
-            this.enrolledOn = enrolledOn;
-        }
-
-        // Getters
-        public String getEnrollmentId() { return enrollmentId; }
-        public String getStudentId() { return studentId; }
-        public String getCourseId() { return courseId; }
-        public String getEnrolledOn() { return enrolledOn; }
+        SwingUtilities.invokeLater(() -> {
+            fetchDataFromDatabase();
+            tableModel.fireTableDataChanged(); // Notify table of data changes
+        });
     }
 }

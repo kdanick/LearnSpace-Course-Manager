@@ -39,16 +39,19 @@ public class CoursePage extends JPanel {
         RoundedButton insertButton = new RoundedButton("Add Course");
         RoundedButton updateButton = new RoundedButton("Edit Course");
         RoundedButton deleteButton = new RoundedButton("Remove Course");
+        RoundedButton refreshButton = new RoundedButton("Refresh");
 
         buttonPanel.add(insertButton);
         buttonPanel.add(updateButton);
         buttonPanel.add(deleteButton);
+        buttonPanel.add(refreshButton);
         add(buttonPanel, BorderLayout.SOUTH);
 
         // Button Actions
         insertButton.addActionListener(this::insertCourse);
         updateButton.addActionListener(this::updateCourse);
         deleteButton.addActionListener(this::deleteCourse);
+        refreshButton.addActionListener(e -> loadCourses());
     }
 
     private void loadCourses() {
@@ -56,22 +59,26 @@ public class CoursePage extends JPanel {
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(
                      "SELECT c.course_id, c.course_name, c.credits, " +
+                             "u.user_id AS user_id, " +  // No need for COALESCE here
                              "COALESCE(u.name, 'None') AS lecturer_name " +
                              "FROM Courses c " +
-                             "LEFT JOIN Users u ON c.lecturer_id = u.user_id ")) {
+                             "LEFT JOIN Users u ON c.lecturer_id = u.user_id")) {
 
             tableModel.setRowCount(0); // Clear previous data
-            tableModel.setColumnIdentifiers(new String[]{"Course ID", "Course Name", "Credits", "Lecturer"});
+            tableModel.setColumnIdentifiers(new String[]{"Course ID", "Course Name", "Credits", "Lecturer ID", "Lecturer"});
 
             while (resultSet.next()) {
+                Object userId = resultSet.getObject("user_id");  // Use getObject() to allow NULL values
                 Object[] rowData = {
                         resultSet.getString("course_id"),
                         resultSet.getString("course_name"),
                         resultSet.getInt("credits"),
+                        userId != null ? userId.toString() : "",  // Empty string instead of "NULL"
                         resultSet.getString("lecturer_name")
                 };
                 tableModel.addRow(rowData);
             }
+
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Error loading courses.");
             e.printStackTrace();
@@ -152,7 +159,7 @@ public class CoursePage extends JPanel {
         Object currentLecturer = tableModel.getValueAt(selectedRow, 3);
 
         JTextField nameField = new JTextField(currentName);
-        JTextField creditField = new JTextField(String.valueOf(currentCredits));
+        JTextField creditField = new JTextField(currentCredits);
         JTextField lecturerField = new JTextField(currentLecturer != null ? currentLecturer.toString() : "");
 
         Object[] message = {

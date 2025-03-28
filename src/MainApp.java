@@ -23,10 +23,12 @@ public class MainApp extends JPanel {
         contentPanel.add(new ProfilePage(user_id), "Profile");
         contentPanel.add(new StudentsPage(), "Students");
         contentPanel.add(new CoursePage(), "Courses");
+        contentPanel.add(new LecCoursePage(user_id), "My Courses");
         contentPanel.add(new AdminDashboard(user_id), "Dashboard");
         contentPanel.add(new LecturersPage(), "Lecturers");
         contentPanel.add(new UsersPage(), "Users");
-        contentPanel.add(new EnrollmentPage(), "Enrollments");
+        contentPanel.add(new EnrollmentPage(user_id), "Enrollments");
+        contentPanel.add(new GradesPage(user_id), "Grades");
     }
 
     private SidebarPanel createSidebar(String role, String username) {

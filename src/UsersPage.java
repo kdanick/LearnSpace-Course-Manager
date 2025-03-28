@@ -103,8 +103,6 @@ public class UsersPage extends JPanel {
         JTextField phoneField = new JTextField(user != null ? user.getPhoneNumber() : "");
         JTextField genderField = new JTextField(user != null ? user.getGender() : "");
 
-        dialog.add(new JLabel("User ID:"));
-        dialog.add(user_idField);
         dialog.add(new JLabel("Username:"));
         dialog.add(usernameField);
         dialog.add(new JLabel("Email:"));

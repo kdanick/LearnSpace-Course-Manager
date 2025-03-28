@@ -64,7 +64,7 @@ public class SidebarPanel extends JPanel {
         if (userRole.equalsIgnoreCase("Admin")) {
             return new String[] {"Dashboard", "Students", "Lecturers", "Courses", "Users", "Profile", "Logout"};
         } else if (userRole.equalsIgnoreCase("Lecturer")) {
-            return new String[] {"Home", "Students", "Enrollments", "Courses", "Profile", "Logout"};
+            return new String[] {"Home", "Enrollments", "My Courses", "Grades", "Profile", "Logout"};
         } else {
             return new String[] {"LoginPage"}; // Default button for other roles
         }
