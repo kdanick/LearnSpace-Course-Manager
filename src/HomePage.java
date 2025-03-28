@@ -18,7 +18,6 @@ public class HomePage extends JPanel {
         setLayout(new BorderLayout());
         setBackground(Color.LIGHT_GRAY);
 
-        // **TOP PANEL: Dashboard Cards**
         JPanel cardsPanel = new JPanel(new GridLayout(1, 3, 20, 0));
         cardsPanel.setBackground(Color.LIGHT_GRAY);
         cardsPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 10, 20));
@@ -31,7 +30,6 @@ public class HomePage extends JPanel {
         cardsPanel.add(createDashboardCard("Total Students Enrolled", totalStudentsLabel, Color.YELLOW.darker()));
         cardsPanel.add(createDashboardCard("Overall Grade", overallGradeLabel, Color.GREEN.darker()));
 
-        // **MIDDLE PANEL: Course Table + Pie Chart**
         JPanel middlePanel = new JPanel(new GridLayout(1, 2, 0, 0));
         middlePanel.setBackground(Color.LIGHT_GRAY);
         middlePanel.setPreferredSize(new Dimension(900, 300));
@@ -53,12 +51,10 @@ public class HomePage extends JPanel {
         middlePanel.add(leftPanel);
         middlePanel.add(rightPanel);
 
-        // **BOTTOM PANEL: Enrollments Table**
         JPanel enrollmentsPanel = new JPanel(new BorderLayout());
         enrollmentsPanel.setBorder(BorderFactory.createTitledBorder("Course Enrollments"));
         enrollmentsPanel.add(new LecturerEnrollmentTable(lecturerId), BorderLayout.CENTER);
 
-        // **Main Content Panel (Scrollable)**
         JPanel mainContent = new JPanel();
         mainContent.setLayout(new BoxLayout(mainContent, BoxLayout.Y_AXIS));
         mainContent.add(cardsPanel);

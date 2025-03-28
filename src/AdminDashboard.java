@@ -17,7 +17,6 @@ public class AdminDashboard extends JPanel {
         setLayout(new BorderLayout());
         setBackground(Color.LIGHT_GRAY);
 
-        // **TOP PANEL: Dashboard Cards**
         cardsPanel = new JPanel(new GridLayout(1, 4, 20, 0));
         cardsPanel.setBackground(Color.LIGHT_GRAY);
         cardsPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 10, 20));
@@ -27,7 +26,6 @@ public class AdminDashboard extends JPanel {
         addDashboardCard("Enrollments", "SELECT COUNT(*) FROM Enrollments", Color.ORANGE);
         addDashboardCard("Instructors", "SELECT COUNT(*) FROM Users WHERE role='lecturer'", Color.YELLOW);
 
-        // **BOTTOM PANEL: Analytics + Table**
         JPanel analyticsPanel = new JPanel(new GridBagLayout());
         analyticsPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 20, 20));
         analyticsPanel.setBackground(Color.LIGHT_GRAY);
@@ -38,7 +36,6 @@ public class AdminDashboard extends JPanel {
         gbc.weightx = 1.0;
         gbc.gridx = 0;
 
-        // **Analytics Row: Bar Chart & Pie Chart**
         JPanel chartRow = new JPanel(new GridLayout(1, 2, 20, 10));
         chartRow.setBackground(Color.LIGHT_GRAY);
         chartRow.setBorder(BorderFactory.createTitledBorder("Analytics Overview"));
@@ -50,11 +47,9 @@ public class AdminDashboard extends JPanel {
         gbc.gridy = 0;
         analyticsPanel.add(chartRow, gbc);
 
-        // **Table Row: Average Grade per Course**
         gbc.gridy = 1;
         analyticsPanel.add(new CourseGradeTable(), gbc);
 
-        // **Main Content Panel (Scrollable)**
         JPanel mainContent = new JPanel();
         mainContent.setLayout(new BoxLayout(mainContent, BoxLayout.Y_AXIS));
         mainContent.add(cardsPanel);
@@ -66,11 +61,9 @@ public class AdminDashboard extends JPanel {
 
         add(scrollPane, BorderLayout.CENTER);
 
-        // **Start Auto Refresh for Dashboard Cards**
         startAutoRefresh();
     }
 
-    // **DASHBOARD CARDS - Create and Store Labels**
     private void addDashboardCard(String title, String query, Color bgColor) {
         JPanel card = new JPanel(new BorderLayout());
         card.setBackground(bgColor);
@@ -94,7 +87,6 @@ public class AdminDashboard extends JPanel {
         cardsPanel.add(card);
     }
 
-    // **Fetch Data from Database**
     private String fetchCountFromDatabase(String query) {
         try (Connection conn = Db_connect.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query);
@@ -108,13 +100,11 @@ public class AdminDashboard extends JPanel {
         return "N/A";
     }
 
-    // **Auto Refresh Dashboard Every 10 Seconds**
     private void startAutoRefresh() {
         Timer timer = new Timer(10_000, e -> updateDashboardCards());
         timer.start();
     }
 
-    // **Update Dashboard Cards**
     private void updateDashboardCards() {
         String[] queries = {
                 "SELECT COUNT(*) FROM Courses",

@@ -59,7 +59,7 @@ public class CoursePage extends JPanel {
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(
                      "SELECT c.course_id, c.course_name, c.credits, " +
-                             "u.user_id AS user_id, " +  // No need for COALESCE here
+                             "u.user_id AS user_id, " +
                              "COALESCE(u.name, 'None') AS lecturer_name " +
                              "FROM Courses c " +
                              "LEFT JOIN Users u ON c.lecturer_id = u.user_id")) {
