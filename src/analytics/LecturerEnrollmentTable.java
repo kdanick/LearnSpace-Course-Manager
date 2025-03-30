@@ -21,7 +21,7 @@ public class LecturerEnrollmentTable extends JPanel {
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createTitledBorder("Students Enrolled in Your Courses"));
 
-        String[] columns = {"baseClasses.Student ID", "baseClasses.Student Name", "Course ID", "Course Name", "Enrolled On"};
+        String[] columns = {"Student ID", "Student Name", "Course ID", "Course Name", "Enrolled On"};
         tableModel = new DefaultTableModel(columns, 0);
         table = new JTable(tableModel);
         table.setFillsViewportHeight(true);

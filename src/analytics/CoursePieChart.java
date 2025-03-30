@@ -25,7 +25,7 @@ public class CoursePieChart extends JPanel {
         setLayout(new BorderLayout());
 
         dataset = new DefaultPieDataset();
-        pieChart = ChartFactory.createPieChart("baseClasses.Student Distribution per Course", dataset, true, true, false);
+        pieChart = ChartFactory.createPieChart("Student Distribution per Course", dataset, true, true, false);
 
         PiePlot plot = (PiePlot) pieChart.getPlot();
         plot.setLabelFont(new Font("SansSerif", Font.BOLD, 12));

@@ -7,9 +7,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 public class Db_connect {
-    private static final String URL = "jdbc:postgresql://localhost:5432/learnspace";
-    private static final String USER = "postgres";
-    private static final String PASSWORD = "passcode";
+    private static final String URL = "jdbc:postgresql://localhost:5432/Your-database-name"; // Use your Actual postgres database name
+    private static final String USER = "your-username"; // Your actual username
+    private static final String PASSWORD = "Your-database-password"; // Your actual password
 
     private Db_connect() {
     }
