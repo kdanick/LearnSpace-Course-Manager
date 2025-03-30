@@ -56,7 +56,7 @@ Now you're all set! 🎉
 
 This project was a **team effort**, and I want to acknowledge everyone who contributed to making LearnSpace what it is! 🌟  
 
-👤 **Danick Kirenga [Me](https://github.com/kdanick)** – *Developer*  
+👤 **[Danick Kirenga](https://github.com/kdanick)** – *Developer*  
 👤 **[Kinyanjui Dean](https://github.com/Kinyanjui-Dean)** – *Developer*  
 👤 **[Madina Sued](https://github.com/Madina2028)** – *Developer*   
 👤 **[Umutoni Elsa](https://github.com/Umutoni-elsa)** – *Developer*  
